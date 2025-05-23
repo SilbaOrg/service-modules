@@ -35,6 +35,23 @@ interface LogEntry {
   [key: string]: unknown;
 }
 
+// CORS configuration type - Matches oakCors expected format
+interface CorsConfig {
+  origin?:
+    | string
+    | boolean
+    | RegExp
+    | (string | RegExp)[]
+    | ((ctx: {
+        request: { headers: { get: (key: string) => string | null } };
+      }) => string);
+  methods?: string[];
+  allowedHeaders?: string[];
+  exposedHeaders?: string[];
+  credentials?: boolean;
+  maxAge?: number;
+}
+
 type Country = string;
 type CountryISO = string;
 type Prompt = string;
@@ -124,6 +141,7 @@ type PerplexityUsage = {
   total_tokens: number;
   search_context_size: "low" | "medium" | "high";
   reasoning_tokens?: number;
+  citation_tokens?: number;
 };
 
 interface PerplexityChatResponseData {
@@ -142,6 +160,54 @@ interface PerplexityChatResponse {
   data: PerplexityChatResponseData | null;
   error?: string;
 }
+
+// Perplexity API request type
+type PerplexityRequest = {
+  model: string;
+  messages: PerplexityMessage[];
+  web_search_options: {
+    search_context_size: "low" | "medium" | "high";
+  };
+  return_related_questions: boolean;
+  [key: string]: unknown;
+};
+
+// Full Perplexity API response type as returned by the API
+interface RawPerplexityApiResponse {
+  id: string;
+  model: string;
+  created: number;
+  usage: PerplexityUsage;
+  citations?: string[];
+  related_questions?: string[];
+  object: string;
+  choices: Array<{
+    index: number;
+    finish_reason: string;
+    message: {
+      role: string;
+      content: string;
+    };
+    delta?: {
+      role: string;
+      content: string;
+    };
+  }>;
+  [key: string]: unknown;
+}
+
+// Our simplified response type with only what we need
+type StrippedPerplexityChatResponse = {
+  id: string;
+  model: string;
+  created: number;
+  usage: PerplexityUsage;
+  cost: CostDetails;
+  citations: string[];
+  relatedQuestions: string[];
+  content: string; // Extracted from choices[0].message.content
+  fromCache?: boolean; // For tracking if this came from cache
+};
 
 type CostDetails = {
   input: number;
@@ -274,6 +340,16 @@ interface AnthropicChatResponse {
 
 //---------------------------------------------------------------
 
+// Type guard for Perplexity chat completion request
+function isPerplexityChatRequest(obj: unknown): obj is PerplexityRequest {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "model" in obj &&
+    "messages" in obj
+  );
+}
+
 export type {
   PerplexityQueryResult,
   PerplexityQueryCost,
@@ -286,6 +362,10 @@ export type {
   LoggerConfig,
   LogEntry,
   ServiceResponse,
+  CorsConfig,
+  PerplexityRequest,
+  RawPerplexityApiResponse,
+  StrippedPerplexityChatResponse,
   PerplexityChatRequest,
   PerplexityChatResponse,
   PerplexityChatResponseData,
@@ -301,4 +381,4 @@ export type {
   AnthropicChatResponse,
 };
 
-export { LogLevel };
+export { LogLevel, isPerplexityChatRequest };
