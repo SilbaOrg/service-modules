@@ -1,6 +1,11 @@
 import path from "node:path";
 import { createLogger } from "../logger.ts";
-import type { ServiceResponse } from "../types.ts";
+import type {
+  PerplexityChatRequest,
+  PerplexityChatResponse,
+  PerplexityChatResponseData,
+  ServiceResponse,
+} from "../types.ts";
 import { assertApiKey } from "../utilities.ts";
 
 const BASE_URL = "http://perplexity-service:5002";
@@ -8,85 +13,6 @@ const PERPLEXITY_API_KEY = assertApiKey(
   Deno.env.get("PERPLEXITY_API_KEY"),
   "PERPLEXITY_API_KEY"
 );
-
-// --- Types ---
-interface PerplexityMessage {
-  role: "system" | "user" | "assistant";
-  content: string | Array<unknown>;
-}
-
-interface PerplexityWebSearchOptions {
-  search_context_size: "low" | "medium" | "high";
-  user_location?: {
-    latitude?: number;
-    longitude?: number;
-    country: string;
-  };
-}
-
-interface PerplexitySearchDomainFilter {
-  includes?: string[];
-  excludes?: string[];
-}
-
-interface PerplexityRequestOptions {
-  max_tokens?: number;
-  temperature?: number;
-  top_p?: number;
-  search_domain_filter?: PerplexitySearchDomainFilter[];
-  return_images?: boolean;
-  return_related_questions: boolean;
-  search_recency_filter?: string;
-  top_k?: number;
-  stream?: boolean;
-  presence_penalty?: number;
-  frequency_penalty?: number;
-  response_format?: Record<string, unknown>;
-  web_search_options: PerplexityWebSearchOptions;
-}
-
-interface PerplexityChatRequest extends PerplexityRequestOptions {
-  model: string;
-  messages: PerplexityMessage[];
-}
-
-type PerplexityUsage = {
-  prompt_tokens: number;
-  completion_tokens: number;
-  total_tokens: number;
-  search_context_size: "low" | "medium" | "high";
-  reasoning_tokens?: number;
-};
-
-interface PerplexityChatResponseChoice {
-  index: number;
-  finish_reason: string;
-  message: {
-    role: string;
-    content: string;
-  };
-  delta?: {
-    role: string;
-    content: string;
-  };
-}
-
-interface PerplexityChatResponseData {
-  id: string;
-  model: string;
-  usage: PerplexityUsage;
-  content: string;
-  created: number;
-  citations: string[];
-  fromCache: boolean;
-  relatedQuestions: string[];
-}
-
-interface PerplexityChatResponse {
-  success: boolean;
-  data: PerplexityChatResponseData | null;
-  error?: string;
-}
 
 // --- Logger ---
 const logger = createLogger("perplexity-service", { module: "perplexity" });
@@ -197,9 +123,3 @@ async function perplexityChat(
 }
 
 export { perplexityChat };
-export type {
-  PerplexityChatRequest,
-  PerplexityChatResponse,
-  PerplexityChatResponseData,
-  PerplexityUsage,
-};

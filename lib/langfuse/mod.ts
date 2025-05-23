@@ -7,8 +7,7 @@ import {
   type LangfuseTraceClient,
 } from "https://esm.sh/langfuse";
 import { createLogger } from "../logger.ts";
-import type { CostDetails } from "../perplexity/cost-calculator.ts";
-import type { PerplexityUsage } from "../perplexity/mod.ts";
+import type { CostDetails, PerplexityUsage } from "../types.ts";
 
 /**
  * Langfuse Utilities - A reusable module for tracing LLM interactions

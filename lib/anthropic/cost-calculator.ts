@@ -10,50 +10,7 @@
  * Pricing data based on Anthropic documentation as of January 2025
  */
 
-/**
- * Token pricing structure for Anthropic models ($ per million tokens)
- *
- * Prompt Caching:
- * - inputBase: Standard input tokens without caching
- * - cacheWrite: Cost to write tokens to cache (5-minute TTL)
- * - cacheRead: Cost to read cached tokens (significant savings)
- *
- * Batch Processing:
- * - batchInput/batchOutput: 50% discount when batch_mode is enabled
- * - Available for all models, processes asynchronously with <1 hour completion
- */
-interface TokenPricing {
-  inputBase: number; // Base input price per million tokens
-  cacheWrite: number; // Cache write price per million tokens (5-minute TTL)
-  cacheRead: number; // Cache read price per million tokens (major savings)
-  output: number; // Output price per million tokens
-  batchInput?: number; // Batch input price per million tokens (50% discount)
-  batchOutput?: number; // Batch output price per million tokens (50% discount)
-}
-
-/**
- * Mapping of model names to their pricing information
- */
-interface ModelPricing {
-  [modelName: string]: TokenPricing;
-}
-
-/**
- * Extended usage information with optional cache and batch mode fields
- *
- * Cache fields are populated when prompt caching is used:
- * - cache_hits: Tokens read from cache (cheap)
- * - cache_writes: Tokens written to cache (more expensive than base input)
- *
- * Batch mode provides 50% discount but processes asynchronously
- */
-interface AnthropicUsage {
-  input_tokens: number;
-  output_tokens: number;
-  cache_hits?: number; // Optional - from prompt caching (5-minute TTL)
-  cache_writes?: number; // Optional - from prompt caching
-  batch_mode?: boolean; // Optional - if batch processing was used (50% discount)
-}
+import { AnthropicUsage, ModelPricing, TokenPricing } from "../types.ts";
 
 /**
  * Pricing information for each model ($ per million tokens)
