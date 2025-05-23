@@ -11,7 +11,7 @@ const FIRECRAWL_API_KEY = assertApiKey(
 );
 
 // --- Types ---
-export interface FirecrawlScrapeRequest {
+interface FirecrawlScrapeRequest {
   url: string;
   formats?: string[];
   onlyMainContent?: boolean;
@@ -25,7 +25,7 @@ export interface FirecrawlScrapeRequest {
   agent?: string | Record<string, unknown>;
 }
 
-export interface FirecrawlScrapeResponseData {
+interface FirecrawlScrapeResponseData {
   markdown?: string;
   html?: string;
   rawHtml?: string;
@@ -41,7 +41,7 @@ export interface FirecrawlScrapeResponseData {
   [key: string]: unknown;
 }
 
-export interface FirecrawlScrapeResponse {
+interface FirecrawlScrapeResponse {
   success: boolean;
   data?: FirecrawlScrapeResponseData;
   fromCache?: boolean;
@@ -52,18 +52,17 @@ export interface FirecrawlScrapeResponse {
 const logger = createLogger("firecrawl-service", { module: "firecrawl" });
 
 // --- Pure helpers ---
-export const buildFirecrawlRequestBody = (
-  req: FirecrawlScrapeRequest
-): string => JSON.stringify(req);
+const buildFirecrawlRequestBody = (req: FirecrawlScrapeRequest): string =>
+  JSON.stringify(req);
 
-export const buildFirecrawlHeaders = (apiKey: string): Headers => {
+const buildFirecrawlHeaders = (apiKey: string): Headers => {
   const headers = new Headers({ "Content-Type": "application/json" });
   // Optionally support API key in header
   if (apiKey) headers.set("x-api-key", apiKey);
   return headers;
 };
 
-export const parseFirecrawlResponse = async (
+const parseFirecrawlResponse = async (
   res: Response
 ): Promise<FirecrawlScrapeResponse> => {
   try {
@@ -75,11 +74,11 @@ export const parseFirecrawlResponse = async (
   }
 };
 
-export const isFirecrawlSuccess = (res: FirecrawlScrapeResponse): boolean =>
+const isFirecrawlSuccess = (res: FirecrawlScrapeResponse): boolean =>
   !!res && res.success === true && !!res.data;
 
 // --- Main function ---
-export async function firecrawlScrape(
+async function firecrawlScrape(
   req: FirecrawlScrapeRequest,
   endpoint = path.join(BASE_URL, "api/v1/firecrawl/scrape")
 ): Promise<ServiceResponse<FirecrawlScrapeResponseData>> {
@@ -123,3 +122,10 @@ export async function firecrawlScrape(
     };
   }
 }
+
+export { firecrawlScrape };
+export type {
+  FirecrawlScrapeRequest,
+  FirecrawlScrapeResponse,
+  FirecrawlScrapeResponseData,
+};
