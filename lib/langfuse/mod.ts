@@ -283,9 +283,10 @@ export {
   createTrace,
   createSpan,
   createGeneration,
+  createTraceHeaders,
   completeGeneration,
   completeTrace,
-  flushEvents,
   extractTraceContext,
-  createTraceHeaders,
+  flushEvents,
+  formatPerplexityInput,
 };
