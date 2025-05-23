@@ -2,15 +2,11 @@
 // Calculates the estimated cost in USD for a Perplexity API call
 // based on the model, usage, and options, using the official price matrix.
 
-import type { CostDetails, PerplexityUsage } from "../types.ts";
-
-enum PerplexityModel {
-  SONAR = "sonar",
-  SONAR_PRO = "sonar-pro",
-  SONAR_REASONING = "sonar-reasoning",
-  SONAR_REASONING_PRO = "sonar-reasoning-pro",
-  SONAR_DEEP_RESEARCH = "sonar-deep-research",
-}
+import {
+  type CostDetails,
+  type PerplexityUsage,
+  PerplexityModel,
+} from "../types.ts";
 
 // Pricing matrix, based on May 2025 Perplexity docs
 const PRICING = {

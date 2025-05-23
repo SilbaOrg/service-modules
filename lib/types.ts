@@ -338,6 +338,14 @@ interface AnthropicChatResponse {
   silba_estimated_cost?: number;
 }
 
+enum PerplexityModel {
+  SONAR = "sonar",
+  SONAR_PRO = "sonar-pro",
+  SONAR_REASONING = "sonar-reasoning",
+  SONAR_REASONING_PRO = "sonar-reasoning-pro",
+  SONAR_DEEP_RESEARCH = "sonar-deep-research",
+}
+
 //---------------------------------------------------------------
 
 // Type guard for Perplexity chat completion request
@@ -381,4 +389,4 @@ export type {
   AnthropicChatResponse,
 };
 
-export { LogLevel, isPerplexityChatRequest };
+export { LogLevel, isPerplexityChatRequest, PerplexityModel };
