@@ -194,6 +194,84 @@ interface AnthropicUsage {
   batch_mode?: boolean; // Optional - if batch processing was used (50% discount)
 }
 
+// Anthropic API Types
+type MessageRole = "user" | "assistant";
+
+interface TextContent {
+  type: "text";
+  text: string;
+}
+
+interface ImageSource {
+  type: "base64";
+  media_type: "image/jpeg" | "image/png" | "image/gif" | "image/webp";
+  data: string;
+}
+
+interface ImageContent {
+  type: "image";
+  source: ImageSource;
+}
+
+interface ToolUseContent {
+  type: "tool_use";
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+}
+
+interface ToolResultContent {
+  type: "tool_result";
+  tool_use_id: string;
+  content: string;
+}
+
+type ContentBlock =
+  | TextContent
+  | ImageContent
+  | ToolUseContent
+  | ToolResultContent;
+
+interface Message {
+  role: MessageRole;
+  content: string | ContentBlock[];
+}
+
+interface AnthropicChatRequest {
+  model: string;
+  messages: Message[];
+  max_tokens: number;
+  system?: string;
+  temperature?: number;
+  top_p?: number;
+  top_k?: number;
+  stop_sequences?: string[];
+  stream?: boolean;
+  metadata?: {
+    user_id?: string;
+  };
+}
+
+interface ResponseContent {
+  type: "text";
+  text: string;
+}
+
+interface AnthropicChatResponse {
+  id: string;
+  type: "message";
+  role: "assistant";
+  content: ResponseContent[];
+  model: string;
+  stop_reason: "end_turn" | "max_tokens" | "stop_sequence" | "tool_use";
+  stop_sequence: string | null;
+  usage: {
+    input_tokens: number;
+    output_tokens: number;
+  };
+  silba_estimated_cost?: number;
+}
+
 //---------------------------------------------------------------
 
 export type {
@@ -217,8 +295,10 @@ export type {
   PerplexitySearchDomainFilter,
   CostDetails,
   AnthropicUsage,
-  AnthropicModelPricing as ModelPricing,
-  AnthropicTokenPricing as TokenPricing,
+  AnthropicModelPricing,
+  AnthropicTokenPricing,
+  AnthropicChatRequest,
+  AnthropicChatResponse,
 };
 
 export { LogLevel };
