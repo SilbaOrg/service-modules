@@ -25,16 +25,17 @@ interface FirecrawlScrapeRequest {
 }
 
 interface FirecrawlScrapeResponseData {
-  markdown?: string;
+  markdown: string;
   html?: string;
   rawHtml?: string;
-  links?: string[];
+  links: string[];
   screenshot?: string;
-  metadata?: {
-    title?: string;
-    description?: string;
-    sourceURL?: string;
-    statusCode?: number;
+  metadata: {
+    url: string;
+    title: string;
+    description: string;
+    sourceURL: string;
+    statusCode: number;
     [key: string]: unknown;
   };
   [key: string]: unknown;
