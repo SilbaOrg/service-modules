@@ -118,7 +118,7 @@ interface PerplexityRequestOptions {
   max_tokens?: number;
   temperature?: number;
   top_p?: number;
-  search_domain_filter?: PerplexitySearchDomainFilter[];
+  search_domain_filter?: string[];
   return_images?: boolean;
   return_related_questions: boolean;
   search_recency_filter?: string;
