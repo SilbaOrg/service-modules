@@ -135,10 +135,13 @@ interface PerplexityChatRequest extends PerplexityRequestOptions {
   messages: PerplexityMessage[];
 }
 
-type PerplexityUsage = {
+type GenericUsage = {
   prompt_tokens: number;
   completion_tokens: number;
   total_tokens: number;
+};
+
+type PerplexityUsage = GenericUsage & {
   search_context_size: "low" | "medium" | "high";
   reasoning_tokens?: number;
   citation_tokens?: number;

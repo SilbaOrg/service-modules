@@ -1,6 +1,5 @@
 import path from "node:path";
 import { createLogger } from "../logger.ts";
-import type { ServiceResponse } from "../types.ts";
 import { assertApiKey } from "../utilities.ts";
 
 const BASE_URL = "http://firecrawl-service:5001/";
@@ -45,7 +44,10 @@ interface FirecrawlScrapeResponse {
   success: boolean;
   data?: FirecrawlScrapeResponseData;
   fromCache?: boolean;
-  error?: string;
+  error?: {
+    code: string;
+    message: string;
+  };
 }
 
 // --- Logger ---
@@ -70,7 +72,13 @@ const parseFirecrawlResponse = async (
     return json;
   } catch (err) {
     logger.error("Failed to parse Firecrawl response", { error: err });
-    return { success: false, error: "Invalid JSON response from Firecrawl" };
+    return {
+      success: false,
+      error: {
+        code: "INVALID_JSON",
+        message: "Invalid JSON response from Firecrawl",
+      },
+    };
   }
 };
 
@@ -81,7 +89,7 @@ const isFirecrawlSuccess = (res: FirecrawlScrapeResponse): boolean =>
 async function firecrawlScrape(
   req: FirecrawlScrapeRequest,
   endpoint = path.join(BASE_URL, "api/v1/firecrawl/scrape")
-): Promise<ServiceResponse<FirecrawlScrapeResponseData>> {
+): Promise<FirecrawlScrapeResponse> {
   logger.info("Firecrawl scrape request", {
     url: req.url,
     formats: req.formats,
@@ -117,7 +125,7 @@ async function firecrawlScrape(
       success: false,
       error: {
         code: "FIRECRAWL_ERROR",
-        message: firecrawlRes.error || "Unknown error",
+        message: firecrawlRes.error?.message || "Unknown error",
       },
     };
   }
