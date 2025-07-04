@@ -35,6 +35,41 @@ interface LogEntry {
   [key: string]: unknown;
 }
 
+/**
+ * Type for flat log metadata - only allows primitive values
+ * This ensures Loki/Grafana can properly parse and index log fields
+ */
+type FlatLogMetadata = Record<string, string | number | boolean | null | undefined>;
+
+/**
+ * Type guard to check if a value is a primitive (non-object)
+ */
+function isPrimitive(value: unknown): boolean {
+  return value === null || 
+         value === undefined ||
+         typeof value === 'string' || 
+         typeof value === 'number' || 
+         typeof value === 'boolean';
+}
+
+/**
+ * Validates that metadata contains only flat key-value pairs
+ * Throws an error if nested objects are detected
+ */
+function validateFlatMetadata(metadata: Record<string, unknown>): void {
+  Object.entries(metadata).forEach(([key, value]) => {
+    if (!isPrimitive(value)) {
+      const valueType = Array.isArray(value) ? 'array' : 'object';
+      throw new Error(
+        `Nested ${valueType} not allowed in log metadata. ` +
+        `Found nested ${valueType} at key '${key}'. ` +
+        `Use flat keys instead (e.g., '${key}_id', '${key}_name'). ` +
+        `This is required for proper Loki/Grafana integration.`
+      );
+    }
+  });
+}
+
 // CORS configuration type - Matches oakCors expected format
 interface CorsConfig {
   origin?:
@@ -372,6 +407,7 @@ export type {
   Prompt,
   LoggerConfig,
   LogEntry,
+  FlatLogMetadata,
   ServiceResponse,
   CorsConfig,
   PerplexityRequest,
@@ -392,4 +428,4 @@ export type {
   AnthropicChatResponse,
 };
 
-export { LogLevel, isPerplexityChatRequest, PerplexityModel };
+export { LogLevel, isPerplexityChatRequest, PerplexityModel, validateFlatMetadata };
