@@ -384,6 +384,113 @@ enum PerplexityModel {
   SONAR_DEEP_RESEARCH = "sonar-deep-research",
 }
 
+// OpenAI Types
+enum OpenAIModel {
+  // GPT-4.5
+  GPT_4_5_PREVIEW = "gpt-4.5-preview",
+  
+  // GPT-4.1 Series
+  GPT_4_1 = "gpt-4.1",
+  GPT_4_1_MINI = "gpt-4.1-mini",
+  GPT_4_1_NANO = "gpt-4.1-nano",
+  
+  // GPT-4o Series
+  GPT_4O = "gpt-4o",
+  GPT_4O_MINI = "gpt-4o-mini",
+  
+  // Reasoning Models
+  O1 = "o1",
+  O1_MINI = "o1-mini",
+  O1_PRO = "o1-pro",
+  O3 = "o3",
+  O3_PRO = "o3-pro",
+  O4_MINI = "o4-mini",
+  
+  // Deep Research Models
+  O3_DEEP_RESEARCH = "o3-deep-research-2025-06-26",
+  O4_MINI_DEEP_RESEARCH = "o4-mini-deep-research-2025-06-26",
+  
+  // Legacy
+  GPT_3_5_TURBO = "gpt-3.5-turbo",
+}
+
+type OpenAIUsage = GenericUsage & {
+  cached_tokens?: number;
+  reasoning_tokens?: number;
+  web_search_tokens?: number;
+};
+
+// OpenAI Responses API Types
+interface OpenAIToolWebSearch {
+  type: "web_search_preview";
+}
+
+interface OpenAIToolFileSearch {
+  type: "file_search";
+}
+
+interface OpenAIToolCodeInterpreter {
+  type: "code_interpreter";
+  container?: {
+    type: "auto";
+    file_ids?: string[];
+  };
+}
+
+type OpenAITool = OpenAIToolWebSearch | OpenAIToolFileSearch | OpenAIToolCodeInterpreter;
+
+interface OpenAIResponsesRequest {
+  model: string;
+  input: string | Array<{
+    role: "developer" | "user" | "assistant";
+    content: Array<{
+      type: "input_text";
+      text: string;
+    }>;
+  }>;
+  tools?: OpenAITool[];
+  stream?: boolean;
+  reasoning?: {
+    summary: "auto" | "none";
+  };
+  previous_response_id?: string;
+  max_tokens?: number;
+  temperature?: number;
+  top_p?: number;
+}
+
+interface OpenAIResponsesResponse {
+  id: string;
+  object: "response";
+  created: number;
+  model: string;
+  usage: OpenAIUsage;
+  output_text?: string;
+  output?: Array<{
+    content: Array<{
+      type: "text";
+      text: string;
+    }>;
+  }>;
+  sources?: Array<{
+    url: string;
+    title?: string;
+  }>;
+  finish_reason: string;
+}
+
+// OpenAI Token Pricing ($ per million tokens)
+interface OpenAITokenPricing {
+  input: number;
+  output: number;
+  cached?: number;
+  webSearchIncluded?: boolean;
+}
+
+interface OpenAIModelPricing {
+  [modelName: string]: OpenAITokenPricing;
+}
+
 //---------------------------------------------------------------
 
 // Type guard for Perplexity chat completion request
@@ -426,6 +533,12 @@ export type {
   AnthropicTokenPricing,
   AnthropicChatRequest,
   AnthropicChatResponse,
+  OpenAIUsage,
+  OpenAITool,
+  OpenAIResponsesRequest,
+  OpenAIResponsesResponse,
+  OpenAITokenPricing,
+  OpenAIModelPricing,
 };
 
-export { LogLevel, isPerplexityChatRequest, PerplexityModel, validateFlatMetadata };
+export { LogLevel, isPerplexityChatRequest, PerplexityModel, OpenAIModel, validateFlatMetadata };
