@@ -129,11 +129,26 @@ function calculateOpenAICost(
   model: string,
   usage: OpenAIUsage
 ): CostDetails {
+  // Validate inputs
+  if (!model) {
+    throw new Error(`Model is required for cost calculation`);
+  }
+  if (!usage) {
+    throw new Error(`Usage data is required for cost calculation`);
+  }
+  if (typeof usage.prompt_tokens !== 'number' || usage.prompt_tokens < 0) {
+    throw new Error(`Invalid prompt_tokens: ${usage.prompt_tokens}`);
+  }
+  if (typeof usage.completion_tokens !== 'number' || usage.completion_tokens < 0) {
+    throw new Error(`Invalid completion_tokens: ${usage.completion_tokens}`);
+  }
+
   const normalizedModel = normalizeModel(model);
   const pricing = PRICING[normalizedModel];
   
   if (!pricing) {
-    throw new Error(`Unknown model: ${model} (normalized: ${normalizedModel})`);
+    const availableModels = Object.keys(PRICING).join(', ');
+    throw new Error(`Unknown model: ${model} (normalized: ${normalizedModel}). Available models: ${availableModels}`);
   }
   
   // Convert token counts to millions for cost calculation
@@ -164,11 +179,24 @@ function calculateOpenAICost(
   }
   
   // Round to 6 decimals for precision
-  return {
+  const result = {
     input: Math.round(inputCost * 1000000) / 1000000,
     output: Math.round(outputCost * 1000000) / 1000000,
     total: Math.round((inputCost + outputCost) * 1000000) / 1000000,
   };
+
+  // Validate calculated costs are valid numbers
+  if (typeof result.input !== 'number' || isNaN(result.input) || result.input < 0) {
+    throw new Error(`Invalid calculated input cost: ${result.input}`);
+  }
+  if (typeof result.output !== 'number' || isNaN(result.output) || result.output < 0) {
+    throw new Error(`Invalid calculated output cost: ${result.output}`);
+  }
+  if (typeof result.total !== 'number' || isNaN(result.total) || result.total < 0) {
+    throw new Error(`Invalid calculated total cost: ${result.total}`);
+  }
+
+  return result;
 }
 
 export { calculateOpenAICost, PRICING as OPENAI_MODEL_PRICING };

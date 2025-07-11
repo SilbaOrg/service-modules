@@ -6,6 +6,8 @@ interface ServiceResponse<T = unknown> {
     code: string;
     message: string;
     stack?: string;
+    statusCode?: number;
+    details?: unknown;
   };
 }
 
@@ -503,6 +505,32 @@ function isPerplexityChatRequest(obj: unknown): obj is PerplexityRequest {
   );
 }
 
+//---------------------------------------------------------------
+// Health Middleware Types
+
+/**
+ * Health status enumeration
+ */
+type HealthStatus = "healthy" | "unhealthy" | "degraded";
+
+/**
+ * Enhanced health response with comprehensive metrics
+ */
+interface EnhancedHealthResponse {
+  status: HealthStatus;
+  uptime_percentage: number;
+  uptime_seconds: number;
+  response_time_avg_ms: number;
+  response_time_p95_ms: number;
+  requests_total: number;
+  requests_successful: number;
+  success_rate_percentage: number;
+  last_restart: string; // ISO 8601 timestamp
+  service_specific?: Record<string, string | number | boolean>;
+}
+
+//---------------------------------------------------------------
+
 export type {
   PerplexityQueryResult,
   PerplexityQueryCost,
@@ -539,6 +567,8 @@ export type {
   OpenAIResponsesResponse,
   OpenAITokenPricing,
   OpenAIModelPricing,
+  HealthStatus,
+  EnhancedHealthResponse,
 };
 
 export { LogLevel, isPerplexityChatRequest, PerplexityModel, OpenAIModel, validateFlatMetadata };
