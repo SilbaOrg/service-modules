@@ -93,7 +93,7 @@ async function firecrawlScrape(
 ): Promise<FirecrawlScrapeResponse> {
   logger.info("Firecrawl scrape request", {
     url: req.url,
-    formats: req.formats,
+    formats: req.formats ? JSON.stringify(req.formats) : undefined,
   });
   const body = buildFirecrawlRequestBody(req);
   const headers = buildFirecrawlHeaders(FIRECRAWL_API_KEY);
