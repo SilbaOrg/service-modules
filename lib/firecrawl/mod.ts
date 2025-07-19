@@ -22,6 +22,7 @@ interface FirecrawlScrapeRequest {
   jsonOptions?: Record<string, unknown>;
   actions?: unknown[];
   agent?: string | Record<string, unknown>;
+  proxy?: "basic" | "stealth" | "auto";
 }
 
 interface FirecrawlScrapeResponseData {
@@ -48,6 +49,11 @@ interface FirecrawlScrapeResponse {
   error?: {
     code: string;
     message: string;
+  };
+  retryInfo?: {
+    attempts: number;
+    finalProxy?: string;
+    botDetected: boolean;
   };
 }
 
@@ -113,14 +119,33 @@ async function firecrawlScrape(
     };
   }
 
+  // Extract retry information from headers
+  const retryInfo = {
+    attempts: parseInt(res.headers.get("X-Firecrawl-Retry-Count") || "1", 10),
+    finalProxy: res.headers.get("X-Firecrawl-Proxy-Used") || undefined,
+    botDetected: res.headers.get("X-Firecrawl-Bot-Detection") === "true",
+  };
+
   const firecrawlRes = await parseFirecrawlResponse(res);
   if (isFirecrawlSuccess(firecrawlRes)) {
-    logger.info("Firecrawl scrape success", { url: req.url });
-    return { success: true, data: firecrawlRes.data };
+    logger.info("Firecrawl scrape success", { 
+      url: req.url,
+      retry_attempts: retryInfo.attempts,
+      final_proxy: retryInfo.finalProxy,
+      bot_detected: retryInfo.botDetected,
+    });
+    return { 
+      success: true, 
+      data: firecrawlRes.data,
+      retryInfo,
+    };
   } else {
     logger.warn("Firecrawl scrape failed", {
       url: req.url,
       error: firecrawlRes.error,
+      retry_attempts: retryInfo.attempts,
+      final_proxy: retryInfo.finalProxy,
+      bot_detected: retryInfo.botDetected,
     });
     return {
       success: false,
@@ -128,6 +153,7 @@ async function firecrawlScrape(
         code: "FIRECRAWL_ERROR",
         message: firecrawlRes.error?.message || "Unknown error",
       },
+      retryInfo,
     };
   }
 }
