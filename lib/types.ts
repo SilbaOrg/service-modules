@@ -41,17 +41,22 @@ interface LogEntry {
  * Type for flat log metadata - only allows primitive values
  * This ensures Loki/Grafana can properly parse and index log fields
  */
-type FlatLogMetadata = Record<string, string | number | boolean | null | undefined>;
+type FlatLogMetadata = Record<
+  string,
+  string | number | boolean | null | undefined
+>;
 
 /**
  * Type guard to check if a value is a primitive (non-object)
  */
 function isPrimitive(value: unknown): boolean {
-  return value === null || 
-         value === undefined ||
-         typeof value === 'string' || 
-         typeof value === 'number' || 
-         typeof value === 'boolean';
+  return (
+    value === null ||
+    value === undefined ||
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  );
 }
 
 /**
@@ -61,12 +66,12 @@ function isPrimitive(value: unknown): boolean {
 function validateFlatMetadata(metadata: Record<string, unknown>): void {
   Object.entries(metadata).forEach(([key, value]) => {
     if (!isPrimitive(value)) {
-      const valueType = Array.isArray(value) ? 'array' : 'object';
+      const valueType = Array.isArray(value) ? "array" : "object";
       throw new Error(
         `Nested ${valueType} not allowed in log metadata. ` +
-        `Found nested ${valueType} at key '${key}'. ` +
-        `Use flat keys instead (e.g., '${key}_id', '${key}_name'). ` +
-        `This is required for proper Loki/Grafana integration.`
+          `Found nested ${valueType} at key '${key}'. ` +
+          `Use flat keys instead (e.g., '${key}_id', '${key}_name'). ` +
+          `This is required for proper Loki/Grafana integration.`
       );
     }
   });
@@ -388,30 +393,48 @@ enum PerplexityModel {
 
 // OpenAI Types
 enum OpenAIModel {
+  // GPT-5 Series
+  GPT_5 = "gpt-5",
+  GPT_5_MINI = "gpt-5-mini",
+  GPT_5_NANO = "gpt-5-nano",
+  GPT_5_CHAT_LATEST = "gpt-5-chat-latest",
+
   // GPT-4.5
   GPT_4_5_PREVIEW = "gpt-4.5-preview",
-  
+
   // GPT-4.1 Series
   GPT_4_1 = "gpt-4.1",
   GPT_4_1_MINI = "gpt-4.1-mini",
   GPT_4_1_NANO = "gpt-4.1-nano",
-  
+
   // GPT-4o Series
   GPT_4O = "gpt-4o",
   GPT_4O_MINI = "gpt-4o-mini",
-  
+  GPT_4O_AUDIO_PREVIEW = "gpt-4o-audio-preview",
+  GPT_4O_REALTIME_PREVIEW = "gpt-4o-realtime-preview",
+  GPT_4O_MINI_AUDIO_PREVIEW = "gpt-4o-mini-audio-preview",
+  GPT_4O_MINI_REALTIME_PREVIEW = "gpt-4o-mini-realtime-preview",
+
   // Reasoning Models
   O1 = "o1",
   O1_MINI = "o1-mini",
   O1_PRO = "o1-pro",
   O3 = "o3",
+  O3_MINI = "o3-mini",
   O3_PRO = "o3-pro",
   O4_MINI = "o4-mini",
-  
+
   // Deep Research Models
-  O3_DEEP_RESEARCH = "o3-deep-research-2025-06-26",
-  O4_MINI_DEEP_RESEARCH = "o4-mini-deep-research-2025-06-26",
-  
+  O3_DEEP_RESEARCH = "o3-deep-research",
+  O4_MINI_DEEP_RESEARCH = "o4-mini-deep-research",
+
+  // Other Models
+  COMPUTER_USE_PREVIEW = "computer-use-preview",
+  GPT_IMAGE_1 = "gpt-image-1",
+  CODEX_MINI_LATEST = "codex-mini-latest",
+  GPT_4O_MINI_SEARCH_PREVIEW = "gpt-4o-mini-search-preview",
+  GPT_4O_SEARCH_PREVIEW = "gpt-4o-search-preview",
+
   // Legacy
   GPT_3_5_TURBO = "gpt-3.5-turbo",
 }
@@ -439,17 +462,22 @@ interface OpenAIToolCodeInterpreter {
   };
 }
 
-type OpenAITool = OpenAIToolWebSearch | OpenAIToolFileSearch | OpenAIToolCodeInterpreter;
+type OpenAITool =
+  | OpenAIToolWebSearch
+  | OpenAIToolFileSearch
+  | OpenAIToolCodeInterpreter;
 
 interface OpenAIResponsesRequest {
   model: string;
-  input: string | Array<{
-    role: "developer" | "user" | "assistant";
-    content: Array<{
-      type: "input_text";
-      text: string;
-    }>;
-  }>;
+  input:
+    | string
+    | Array<{
+        role: "developer" | "user" | "assistant";
+        content: Array<{
+          type: "input_text";
+          text: string;
+        }>;
+      }>;
   tools?: OpenAITool[];
   stream?: boolean;
   reasoning?: {
@@ -532,43 +560,49 @@ interface EnhancedHealthResponse {
 //---------------------------------------------------------------
 
 export type {
-  PerplexityQueryResult,
-  PerplexityQueryCost,
-  CompanyInformation,
-  SilbaCitation,
-  PromptPair,
-  SystemPrompt,
-  UserPrompt,
-  Prompt,
-  LoggerConfig,
-  LogEntry,
-  FlatLogMetadata,
-  ServiceResponse,
-  CorsConfig,
-  PerplexityRequest,
-  RawPerplexityApiResponse,
-  StrippedPerplexityChatResponse,
-  PerplexityChatRequest,
-  PerplexityChatResponse,
-  PerplexityChatResponseData,
-  PerplexityUsage,
-  PerplexityMessage,
-  PerplexityWebSearchOptions,
-  PerplexitySearchDomainFilter,
-  CostDetails,
-  AnthropicUsage,
-  AnthropicModelPricing,
-  AnthropicTokenPricing,
   AnthropicChatRequest,
   AnthropicChatResponse,
-  OpenAIUsage,
-  OpenAITool,
+  AnthropicModelPricing,
+  AnthropicTokenPricing,
+  AnthropicUsage,
+  CompanyInformation,
+  CorsConfig,
+  CostDetails,
+  EnhancedHealthResponse,
+  FlatLogMetadata,
+  HealthStatus,
+  LogEntry,
+  LoggerConfig,
+  OpenAIModelPricing,
   OpenAIResponsesRequest,
   OpenAIResponsesResponse,
   OpenAITokenPricing,
-  OpenAIModelPricing,
-  HealthStatus,
-  EnhancedHealthResponse,
+  OpenAITool,
+  OpenAIUsage,
+  PerplexityChatRequest,
+  PerplexityChatResponse,
+  PerplexityChatResponseData,
+  PerplexityMessage,
+  PerplexityQueryCost,
+  PerplexityQueryResult,
+  PerplexityRequest,
+  PerplexitySearchDomainFilter,
+  PerplexityUsage,
+  PerplexityWebSearchOptions,
+  Prompt,
+  PromptPair,
+  RawPerplexityApiResponse,
+  ServiceResponse,
+  SilbaCitation,
+  StrippedPerplexityChatResponse,
+  SystemPrompt,
+  UserPrompt,
 };
 
-export { LogLevel, isPerplexityChatRequest, PerplexityModel, OpenAIModel, validateFlatMetadata };
+export {
+  LogLevel,
+  OpenAIModel,
+  PerplexityModel,
+  isPerplexityChatRequest,
+  validateFlatMetadata,
+};
