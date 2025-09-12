@@ -25,109 +25,24 @@ export type ProviderModels = {
 
 export const LLM_MODELS: ProviderModels = {
   openai: [
-    // GPT-4.5 Series
-    {
-      id: "gpt-4.5-preview",
-      displayName: "GPT-4.5 Preview",
-      provider: "openai",
-    },
-
-    // GPT-4.1 Series
+    // GPT-5 Series - Latest OpenAI Models
     {
       id: "gpt-5",
-      displayName: "GPT-4.1",
+      displayName: "GPT-5",
       provider: "openai",
       capabilities: { caching: true },
     },
     {
       id: "gpt-5-mini",
-      displayName: "GPT-4.1 Mini",
+      displayName: "GPT-5 Mini",
       provider: "openai",
       capabilities: { caching: true },
     },
     {
       id: "gpt-5-nano",
-      displayName: "GPT-4.1 Nano",
+      displayName: "GPT-5 Nano",
       provider: "openai",
       capabilities: { caching: true },
-    },
-
-    // GPT-4o Series
-    {
-      id: "gpt-4o",
-      displayName: "GPT-4o",
-      provider: "openai",
-      capabilities: { webSearch: true, caching: true },
-    },
-    {
-      id: "gpt-4o-mini",
-      displayName: "GPT-4o Mini",
-      provider: "openai",
-      capabilities: { webSearch: true, caching: true },
-    },
-
-    // GPT-4 Series
-    { id: "gpt-4-turbo", displayName: "GPT-4 Turbo", provider: "openai" },
-    { id: "gpt-3.5-turbo", displayName: "GPT-3.5 Turbo", provider: "openai" },
-
-    // Reasoning Models
-    {
-      id: "o1",
-      displayName: "o1",
-      provider: "openai",
-      capabilities: { reasoning: true },
-    },
-    {
-      id: "o1-mini",
-      displayName: "o1 Mini",
-      provider: "openai",
-      capabilities: { reasoning: true },
-    },
-    {
-      id: "o1-pro",
-      displayName: "o1 Pro",
-      provider: "openai",
-      capabilities: { reasoning: true },
-    },
-    {
-      id: "o1-preview",
-      displayName: "o1 Preview",
-      provider: "openai",
-      capabilities: { reasoning: true },
-    },
-
-    // O3 Series
-    {
-      id: "o3",
-      displayName: "o3",
-      provider: "openai",
-      capabilities: { caching: true },
-    },
-    {
-      id: "o3-pro",
-      displayName: "o3 Pro",
-      provider: "openai",
-      capabilities: { reasoning: true },
-    },
-    {
-      id: "o3-deep-research-2025-06-26",
-      displayName: "o3 Deep Research",
-      provider: "openai",
-      capabilities: { deepResearch: true },
-    },
-
-    // O4 Series
-    {
-      id: "o4-mini",
-      displayName: "o4 Mini",
-      provider: "openai",
-      capabilities: { caching: true },
-    },
-    {
-      id: "o4-mini-deep-research-2025-06-26",
-      displayName: "o4 Mini Deep Research",
-      provider: "openai",
-      capabilities: { deepResearch: true },
     },
   ],
 
@@ -190,37 +105,20 @@ export const LLM_MODELS: ProviderModels = {
   ],
 
   anthropic: [
-    // Claude 3 Series
+    // Latest Claude Models
     {
-      id: "claude-3-haiku-20240307",
-      displayName: "Claude 3 Haiku",
+      id: "claude-opus-4-1",
+      displayName: "Claude Opus 4.1",
       provider: "anthropic",
     },
     {
-      id: "claude-3-sonnet-20240229",
-      displayName: "Claude 3 Sonnet",
+      id: "claude-sonnet-4-0",
+      displayName: "Claude Sonnet 4.0",
       provider: "anthropic",
     },
     {
-      id: "claude-3-opus-20240229",
-      displayName: "Claude 3 Opus",
-      provider: "anthropic",
-    },
-
-    // Claude 3.5 Series
-    {
-      id: "claude-3-5-sonnet-20240620",
-      displayName: "Claude 3.5 Sonnet",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-3-5-sonnet-20241022",
-      displayName: "Claude 3.5 Sonnet (Oct 2024)",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-3-5-haiku-20241022",
-      displayName: "Claude 3.5 Haiku",
+      id: "claude-3-5-haiku-latest",
+      displayName: "Claude Haiku 3.5",
       provider: "anthropic",
     },
   ],
