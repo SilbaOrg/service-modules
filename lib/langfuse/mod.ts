@@ -5,7 +5,7 @@ import {
   type LangfuseGenerationClient,
   type LangfuseSpanClient,
   type LangfuseTraceClient,
-} from "https://esm.sh/langfuse@3.38.5";
+} from "npm:langfuse@3.38.5";
 import { createLogger } from "../logger.ts";
 import type { CostDetails, PerplexityUsage } from "../types.ts";
 
