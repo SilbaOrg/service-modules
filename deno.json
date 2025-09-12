@@ -1,6 +1,6 @@
 {
   "name": "@silba-org/service-modules",
-  "version": "1.1.2",
+  "version": "1.1.5",
   "description": "Silba Service Modules",
   "license": "Proprietary",
   "repository": {
@@ -8,6 +8,10 @@
     "url": "https://github.com/SilbaOrg/service-modules"
   },
   "author": "Silba",
+  "imports": {
+    "langfuse": "npm:langfuse@^3.38.5",
+    "nanoid": "npm:nanoid@^5.0.8"
+  },
   "fmt": {
     "useTabs": false,
     "lineWidth": 80,

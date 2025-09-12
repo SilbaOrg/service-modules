@@ -12,7 +12,7 @@ import {
 // Pricing matrix, based on OpenAI pricing as of August 2025
 // All prices are per 1 million tokens (Standard tier)
 const PRICING: OpenAIModelPricing = {
-  // GPT-5 Series
+  // GPT-5 Series (Released August 2025)
   [OpenAIModel.GPT_5]: {
     input: 1.25,
     cached: 0.125,
@@ -62,13 +62,11 @@ const PRICING: OpenAIModelPricing = {
     input: 2.5,
     cached: 1.25,
     output: 10.0,
-    webSearchIncluded: true,
   },
   [OpenAIModel.GPT_4O_MINI]: {
     input: 0.15,
     cached: 0.075,
     output: 0.6,
-    webSearchIncluded: true,
   },
   [OpenAIModel.GPT_4O_AUDIO_PREVIEW]: {
     input: 2.5,
@@ -251,18 +249,40 @@ function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
   // Calculate output cost
   const outputCost = completionTokensInMillions * pricing.output;
 
-  // For models with web search included (GPT-4o series), web search tokens are free
-  // For other models, web search tokens are charged at the model's input rate
-  if (usage.web_search_tokens && !pricing.webSearchIncluded) {
+  // Web search tokens are always charged at the model's input rate
+  let webSearchTokenCost = 0;
+  if (usage.web_search_tokens) {
     const webSearchTokensInMillions = usage.web_search_tokens / 1_000_000;
-    inputCost += webSearchTokensInMillions * pricing.input;
+    webSearchTokenCost = webSearchTokensInMillions * pricing.input;
+  }
+
+  // Web search queries are billed separately
+  let webSearchQueryCost = 0;
+  if (usage.web_search_queries) {
+    // Web search pricing varies by model:
+    // - GPT-4o search preview: $30 per 1000 queries
+    // - GPT-4o-mini search preview: $25 per 1000 queries  
+    // - Other models: Use GPT-4o pricing as default
+    let queryPricePerThousand = 30.0; // Default pricing
+    
+    if (normalizedModel === OpenAIModel.GPT_4O_MINI_SEARCH_PREVIEW) {
+      queryPricePerThousand = 25.0;
+    } else if (normalizedModel === OpenAIModel.GPT_4O_SEARCH_PREVIEW) {
+      queryPricePerThousand = 30.0;
+    }
+    
+    webSearchQueryCost = (usage.web_search_queries / 1000) * queryPricePerThousand;
   }
 
   // Round to 6 decimals for precision
+  const totalCost = inputCost + outputCost + webSearchTokenCost + webSearchQueryCost;
+  
   const result = {
-    input: Math.round(inputCost * 1000000) / 1000000,
+    input: Math.round((inputCost + webSearchTokenCost) * 1000000) / 1000000,
     output: Math.round(outputCost * 1000000) / 1000000,
-    total: Math.round((inputCost + outputCost) * 1000000) / 1000000,
+    total: Math.round(totalCost * 1000000) / 1000000,
+    webSearchQueries: usage.web_search_queries || 0,
+    webSearchQueryCost: Math.round(webSearchQueryCost * 1000000) / 1000000,
   };
 
   // Validate calculated costs are valid numbers

@@ -7,10 +7,14 @@
  * - Extended thinking (Claude 4 models)
  * - Standard and priority tier pricing
  *
- * Pricing data based on Anthropic documentation as of January 2025
+ * Pricing data based on Anthropic documentation as of August 2025
  */
 
-import { AnthropicUsage, ModelPricing, TokenPricing } from "../types.ts";
+import {
+  AnthropicModelPricing,
+  AnthropicTokenPricing,
+  AnthropicUsage,
+} from "../types.ts";
 
 /**
  * Pricing information for each model ($ per million tokens)
@@ -23,8 +27,16 @@ import { AnthropicUsage, ModelPricing, TokenPricing } from "../types.ts";
  *
  * All models support 200K context window and batch processing (50% discount)
  */
-const MODEL_PRICING: ModelPricing = {
+const MODEL_PRICING: AnthropicModelPricing = {
   // Claude 4 - Latest generation models
+  "claude-opus-4-1-20250805": {
+    inputBase: 15.0,
+    cacheWrite: 18.75,
+    cacheRead: 1.5,
+    output: 75.0,
+    batchInput: 7.5, // 50% discount
+    batchOutput: 37.5, // 50% discount
+  },
   "claude-opus-4-20250514": {
     inputBase: 15.0,
     cacheWrite: 18.75,
@@ -113,8 +125,10 @@ const MODEL_PRICING: ModelPricing = {
  */
 const MODEL_ALIASES: Record<string, string> = {
   // Claude 4 aliases
-  "claude-opus-4-0": "claude-opus-4-20250514",
+  "claude-opus-4-1": "claude-opus-4-1-20250805",
   "claude-opus-4-latest": "claude-opus-4-20250514",
+  "claude-opus-4-0": "claude-opus-4-20250514",
+
   "claude-sonnet-4-0": "claude-sonnet-4-20250514",
   "claude-sonnet-4-latest": "claude-sonnet-4-20250514",
 
@@ -132,7 +146,7 @@ const MODEL_ALIASES: Record<string, string> = {
 /**
  * Resolve a model name or alias to its canonical name
  *
- * @param modelName - The model name or alias (e.g., "claude-sonnet-4-latest")
+ * @param modelName - The model name or alias (e.g., "claude-sonnet-4-0")
  * @returns The canonical model name (e.g., "claude-sonnet-4-20250514")
  */
 function resolveModelName(modelName: string): string {
@@ -146,7 +160,7 @@ function resolveModelName(modelName: string): string {
  * @returns The pricing information for the model
  * @throws Error if the model is not found
  */
-function getModelPricing(modelName: string): TokenPricing {
+function getModelPricing(modelName: string): AnthropicTokenPricing {
   const resolvedName = resolveModelName(modelName);
   const pricing = MODEL_PRICING[resolvedName];
 
@@ -189,6 +203,8 @@ function calculateAnthropicCost(
   input: number;
   output: number;
   total: number;
+  webSearchQueries: number;
+  webSearchQueryCost: number;
 } {
   // Validate required usage data
   if (!usage.input_tokens && usage.input_tokens !== 0) {
@@ -249,13 +265,26 @@ function calculateAnthropicCost(
     output = outputTokensInMillions * pricing.output;
   }
 
+  // Calculate web search query costs
+  // Anthropic charges $10 per 1,000 web searches
+  let webSearchQueryCost = 0;
+  if (usage.web_search_queries) {
+    webSearchQueryCost = (usage.web_search_queries / 1000) * 10.0;
+  }
+
   // Return detailed cost breakdown
   return {
     input,
     output,
-    total: input + output,
+    total: input + output + webSearchQueryCost,
+    webSearchQueries: usage.web_search_queries || 0,
+    webSearchQueryCost,
   };
 }
 
 export { calculateAnthropicCost };
-export type { AnthropicUsage, ModelPricing, TokenPricing };
+export type {
+  AnthropicUsage,
+  AnthropicModelPricing as ModelPricing,
+  AnthropicTokenPricing as TokenPricing,
+};

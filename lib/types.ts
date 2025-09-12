@@ -258,6 +258,8 @@ type CostDetails = {
   input: number;
   output: number;
   total: number;
+  webSearchQueries?: number;
+  webSearchQueryCost?: number;
 };
 
 /**
@@ -303,6 +305,7 @@ interface AnthropicUsage {
   cache_hits?: number; // Optional - from prompt caching (5-minute TTL)
   cache_writes?: number; // Optional - from prompt caching
   batch_mode?: boolean; // Optional - if batch processing was used (50% discount)
+  web_search_queries?: number; // Optional - count of web search queries performed
 }
 
 // Anthropic API Types
@@ -443,6 +446,7 @@ type OpenAIUsage = GenericUsage & {
   cached_tokens?: number;
   reasoning_tokens?: number;
   web_search_tokens?: number;
+  web_search_queries?: number;
 };
 
 // OpenAI Responses API Types

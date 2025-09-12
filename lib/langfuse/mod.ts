@@ -1,11 +1,11 @@
 // langfuse-utils.ts
-import { nanoid } from "https://deno.land/x/nanoid@v3.0.0/mod.ts";
+import { nanoid } from "nanoid";
 import {
   Langfuse,
   type LangfuseGenerationClient,
   type LangfuseSpanClient,
   type LangfuseTraceClient,
-} from "https://esm.sh/langfuse";
+} from "langfuse";
 import { createLogger } from "../logger.ts";
 import type { CostDetails, PerplexityUsage } from "../types.ts";
 
