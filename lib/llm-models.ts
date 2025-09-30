@@ -47,23 +47,6 @@ export const LLM_MODELS: ProviderModels = {
   ],
 
   perplexity: [
-    // Sonar Models (Legacy naming)
-    {
-      id: "llama-3.1-sonar-small-128k-online",
-      displayName: "Llama 3.1 Sonar Small (128k)",
-      provider: "perplexity",
-    },
-    {
-      id: "llama-3.1-sonar-large-128k-online",
-      displayName: "Llama 3.1 Sonar Large (128k)",
-      provider: "perplexity",
-    },
-    {
-      id: "llama-3.1-sonar-huge-128k-online",
-      displayName: "Llama 3.1 Sonar Huge (128k)",
-      provider: "perplexity",
-    },
-
     // New Sonar Models
     { id: "sonar", displayName: "Sonar", provider: "perplexity" },
     { id: "sonar-pro", displayName: "Sonar Pro", provider: "perplexity" },
@@ -107,18 +90,33 @@ export const LLM_MODELS: ProviderModels = {
   anthropic: [
     // Latest Claude Models
     {
-      id: "claude-opus-4-1",
-      displayName: "Claude Opus 4.1",
+      id: "claude-opus-4-1-20250805",
+      displayName: "Claude Opus 4.1 (2025-08-05)",
       provider: "anthropic",
     },
     {
-      id: "claude-sonnet-4-0",
-      displayName: "Claude Sonnet 4.0",
+      id: "claude-sonnet-4-5-20250929",
+      displayName: "Claude Sonnet 4.5 (2025-09-29)",
       provider: "anthropic",
     },
     {
-      id: "claude-3-5-haiku-latest",
-      displayName: "Claude Haiku 3.5",
+      id: "claude-sonnet-4-20250514",
+      displayName: "Claude Sonnet 4.0 (2025-05-14)",
+      provider: "anthropic",
+    },
+    {
+      id: "claude-3-7-sonnet-20250219",
+      displayName: "Claude 3.7 Sonnet (2025-02-19)",
+      provider: "anthropic",
+    },
+    {
+      id: "claude-3-5-sonnet-20241022",
+      displayName: "Claude 3.5 Sonnet (2024-10-22)",
+      provider: "anthropic",
+    },
+    {
+      id: "claude-3-5-haiku-20241022",
+      displayName: "Claude Haiku 3.5 (2024-10-22)",
       provider: "anthropic",
     },
   ],

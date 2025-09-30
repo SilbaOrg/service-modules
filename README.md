@@ -224,6 +224,105 @@ If you're updating from an older version:
    - Always include relevant IDs (user, order, transaction)
    - Add operation context (endpoint, method, service)
 
+## LLM Models Configuration
+
+The `lib/llm-models.ts` module is the **single source of truth** for all LLM models across Silba.
+
+### Architecture
+
+- **Configuration**: `service-modules/lib/llm-models.ts` - Defines all available models
+- **API Endpoint**: `GET /api/v1/models` in `service-llm` - Exposes models to clients
+- **Consumers**: All services import from service-modules, frontend fetches from service-llm
+
+### Available Models Endpoint
+
+```bash
+GET http://service-llm:5004/api/v1/models
+```
+
+Returns:
+```json
+{
+  "success": true,
+  "data": {
+    "openai": [...],
+    "anthropic": [...],
+    "perplexity": [...],
+    "mistral": [...]
+  }
+}
+```
+
+### Model Configuration Structure
+
+Each model has the following structure:
+
+```typescript
+{
+  id: string;              // Unique model identifier for API calls
+  displayName: string;     // Human-readable name for UI
+  provider: string;        // Provider: "openai" | "anthropic" | "perplexity" | "mistral"
+  capabilities?: {         // Optional capabilities
+    webSearch?: boolean;
+    reasoning?: boolean;
+    deepResearch?: boolean;
+    caching?: boolean;
+  }
+}
+```
+
+### Adding a New Model
+
+1. **Add to `lib/llm-models.ts`** - Update the `LLM_MODELS` constant:
+   ```typescript
+   // In lib/llm-models.ts
+   anthropic: [
+     {
+       id: "claude-sonnet-4-5-20250929",
+       displayName: "Claude Sonnet 4.5 (2025-09-29)",
+       provider: "anthropic",
+       capabilities: { caching: true },
+     },
+     // ... other models
+   ]
+   ```
+
+2. **If Anthropic model**: Add pricing to `lib/anthropic/cost-calculator.ts`:
+   ```typescript
+   // Add to MODEL_PRICING
+   "claude-sonnet-4-5-20250929": {
+     inputBase: 3.0,
+     cacheWrite: 3.75,
+     cacheRead: 0.3,
+     output: 15.0,
+     batchInput: 1.5,
+     batchOutput: 7.5,
+   }
+
+   // Add to MODEL_ALIASES
+   "claude-sonnet-4-5": "claude-sonnet-4-5-20250929"
+   ```
+
+3. **Changes automatically propagate**:
+   - Backend services can import the updated configuration
+   - Frontend fetches the new model list on startup
+   - No code changes needed in consuming services
+
+### Design Principles
+
+1. **Single Source of Truth**: All model definitions live in one place
+2. **Centralized API**: One endpoint (`service-llm`) exposes models to all clients
+3. **Separation of Concerns**: Domain services don't expose infrastructure metadata
+4. **Dynamic Updates**: Adding models doesn't require frontend code changes
+
+### Why service-llm Hosts the Endpoint
+
+The models endpoint lives in `service-llm` because:
+- It's the LLM abstraction layer for the system
+- Model metadata is LLM-specific, not domain-specific
+- All LLM-related information should come from one place
+- Better discoverability for developers
+
 ## Version History
 
 - **1.1.0** - Added flat metadata enforcement and improved Loki/Grafana integration

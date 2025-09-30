@@ -53,6 +53,14 @@ const MODEL_PRICING: AnthropicModelPricing = {
     batchInput: 1.5, // 50% discount
     batchOutput: 7.5, // 50% discount
   },
+  "claude-sonnet-4-5-20250929": {
+    inputBase: 3.0,
+    cacheWrite: 3.75,
+    cacheRead: 0.3,
+    output: 15.0,
+    batchInput: 1.5, // 50% discount
+    batchOutput: 7.5, // 50% discount
+  },
 
   // Claude 3.7 - High performance with early extended thinking
   "claude-3-7-sonnet-20250219": {
@@ -129,8 +137,9 @@ const MODEL_ALIASES: Record<string, string> = {
   "claude-opus-4-latest": "claude-opus-4-20250514",
   "claude-opus-4-0": "claude-opus-4-20250514",
 
+  "claude-sonnet-4-5": "claude-sonnet-4-5-20250929",
   "claude-sonnet-4-0": "claude-sonnet-4-20250514",
-  "claude-sonnet-4-latest": "claude-sonnet-4-20250514",
+  "claude-sonnet-4-latest": "claude-sonnet-4-5-20250929",
 
   // Claude 3.7 aliases
   "claude-3-7-sonnet-latest": "claude-3-7-sonnet-20250219",
