@@ -1,6 +1,7 @@
 {
   "name": "@silba-org/service-modules",
   "version": "1.2.0",
+  "exports": "./lib/mod.ts",
   "description": "Silba Service Modules",
   "license": "Proprietary",
   "repository": {
