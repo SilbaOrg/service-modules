@@ -66,7 +66,7 @@ function createLogger(
     message: string,
     metadata: Record<string, unknown> = {}
   ): void {
-    if (level < config.minLevel) {
+    if (level > config.minLevel) {
       return;
     }
 
