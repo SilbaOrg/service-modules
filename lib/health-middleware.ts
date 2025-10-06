@@ -1,26 +1,5 @@
 import { createLogger } from "./logger.ts";
-import type { ServiceResponse } from "./types.ts";
-
-/**
- * Health status enumeration
- */
-export type HealthStatus = "healthy" | "unhealthy" | "degraded";
-
-/**
- * Enhanced health response with comprehensive metrics
- */
-export interface EnhancedHealthResponse {
-  status: HealthStatus;
-  uptime_percentage: number;
-  uptime_seconds: number;
-  response_time_avg_ms: number;
-  response_time_p95_ms: number;
-  requests_total: number;
-  requests_successful: number;
-  success_rate_percentage: number;
-  last_restart: string; // ISO 8601 timestamp
-  service_specific?: Record<string, string | number | boolean>;
-}
+import type { ServiceResponse, HealthStatus, EnhancedHealthResponse } from "./types.ts";
 
 /**
  * Response time measurement for percentile calculations
