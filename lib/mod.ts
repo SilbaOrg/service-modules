@@ -9,6 +9,12 @@ export * from "./health-middleware.ts";
 export * from "./logging-helpers.ts";
 export * from "./http-logging-middleware.ts";
 
+// Correlation and tracing
+export * from "./correlation/mod.ts";
+
+// Logging utilities
+export * from "./logging/document-context.ts";
+
 // LLM Models Configuration
 export * from "./llm-models.ts";
 
