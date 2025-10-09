@@ -15,7 +15,8 @@
     "npm:@types/node@*": "24.2.0",
     "npm:langfuse@^3.38.5": "3.38.5",
     "npm:nanoid@^5.1.6": "5.1.6",
-    "npm:path-to-regexp@^6.3.0": "6.3.0"
+    "npm:path-to-regexp@^6.3.0": "6.3.0",
+    "npm:tiktoken@1": "1.0.22"
   },
   "jsr": {
     "@oak/commons@1.0.1": {
@@ -102,6 +103,9 @@
     "path-to-regexp@6.3.0": {
       "integrity": "sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ=="
     },
+    "tiktoken@1.0.22": {
+      "integrity": "sha512-PKvy1rVF1RibfF3JlXBSP0Jrcw2uq3yXdgcEXtKTYn3QJ/cBRBHDnrJ5jHky+MENZ6DIPwNUGWpkVx+7joCpNA=="
+    },
     "undici-types@7.10.0": {
       "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="
     }
@@ -109,7 +113,8 @@
   "workspace": {
     "dependencies": [
       "npm:langfuse@^3.38.5",
-      "npm:nanoid@^5.1.6"
+      "npm:nanoid@^5.1.6",
+      "npm:tiktoken@1"
     ]
   }
 }
