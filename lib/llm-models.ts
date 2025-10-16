@@ -115,6 +115,11 @@ export const LLM_MODELS: ProviderModels = {
       provider: "anthropic",
     },
     {
+      id: "claude-haiku-4-5-20251001",
+      displayName: "Claude Haiku 4.5 (2025-10-01)",
+      provider: "anthropic",
+    },
+    {
       id: "claude-3-5-haiku-20241022",
       displayName: "Claude Haiku 3.5 (2024-10-22)",
       provider: "anthropic",

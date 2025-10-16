@@ -72,6 +72,16 @@ const MODEL_PRICING: AnthropicModelPricing = {
     batchOutput: 7.5,
   },
 
+  // Claude 4.5 Haiku - Fastest and most intelligent Haiku model
+  "claude-haiku-4-5-20251001": {
+    inputBase: 1.0,
+    cacheWrite: 1.25,
+    cacheRead: 0.1,
+    output: 5.0,
+    batchInput: 0.5, // 50% discount
+    batchOutput: 2.5, // 50% discount
+  },
+
   // Claude 3.5 - Previous generation intelligent models
   "claude-3-5-haiku-20241022": {
     inputBase: 0.8, // Updated to match documentation
@@ -140,6 +150,9 @@ const MODEL_ALIASES: Record<string, string> = {
   "claude-sonnet-4-5": "claude-sonnet-4-5-20250929",
   "claude-sonnet-4-0": "claude-sonnet-4-20250514",
   "claude-sonnet-4-latest": "claude-sonnet-4-5-20250929",
+
+  // Claude 4.5 Haiku aliases
+  "claude-haiku-4-5": "claude-haiku-4-5-20251001",
 
   // Claude 3.7 aliases
   "claude-3-7-sonnet-latest": "claude-3-7-sonnet-20250219",
