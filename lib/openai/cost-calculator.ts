@@ -182,9 +182,9 @@ function normalizeModel(model: string): string {
 
   // Regular models
   if (modelLower.startsWith("gpt-4.5")) return OpenAIModel.GPT_4_5_PREVIEW;
-  if (modelLower === "gpt-5-mini") return OpenAIModel.GPT_4_1_MINI;
-  if (modelLower === "gpt-5-nano") return OpenAIModel.GPT_4_1_NANO;
-  if (modelLower === "gpt-5") return OpenAIModel.GPT_4_1;
+  if (modelLower === "gpt-5-mini") return OpenAIModel.GPT_5_MINI;
+  if (modelLower === "gpt-5-nano") return OpenAIModel.GPT_5_NANO;
+  if (modelLower === "gpt-5") return OpenAIModel.GPT_5;
   if (modelLower === "gpt-4o-mini") return OpenAIModel.GPT_4O_MINI;
   if (modelLower === "gpt-4o") return OpenAIModel.GPT_4O;
   if (modelLower === "o1-mini") return OpenAIModel.O1_MINI;
