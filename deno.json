@@ -10,9 +10,9 @@
   },
   "author": "Silba",
   "imports": {
-    "langfuse": "npm:langfuse@^3.38.5",
+    "langfuse": "npm:langfuse@^3.38.6",
     "nanoid": "npm:nanoid@^5.1.6",
-    "tiktoken": "npm:tiktoken@^1.0.0"
+    "tiktoken": "npm:tiktoken@^1.0.22"
   },
   "fmt": {
     "useTabs": false,
