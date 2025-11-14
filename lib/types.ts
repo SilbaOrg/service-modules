@@ -396,7 +396,11 @@ enum PerplexityModel {
 
 // OpenAI Types
 enum OpenAIModel {
-  // GPT-5 Series
+  // GPT-5.1 Series (Latest)
+  GPT_5_1 = "gpt-5.1",
+  GPT_5_1_CHAT_LATEST = "gpt-5.1-chat-latest",
+
+  // GPT-5 Series (Legacy)
   GPT_5 = "gpt-5",
   GPT_5_MINI = "gpt-5-mini",
   GPT_5_NANO = "gpt-5-nano",

@@ -25,22 +25,35 @@ export type ProviderModels = {
 
 export const LLM_MODELS: ProviderModels = {
   openai: [
-    // GPT-5 Series - Latest OpenAI Models
+    // GPT-5.1 Series - Latest OpenAI Models
+    {
+      id: "gpt-5.1",
+      displayName: "GPT-5.1",
+      provider: "openai",
+      capabilities: { caching: true },
+    },
+    {
+      id: "gpt-5.1-chat-latest",
+      displayName: "GPT-5.1 Chat Latest",
+      provider: "openai",
+      capabilities: { caching: true },
+    },
+    // GPT-5 Series - Legacy
     {
       id: "gpt-5",
-      displayName: "GPT-5",
+      displayName: "GPT-5 (legacy)",
       provider: "openai",
       capabilities: { caching: true },
     },
     {
       id: "gpt-5-mini",
-      displayName: "GPT-5 Mini",
+      displayName: "GPT-5 Mini (legacy)",
       provider: "openai",
       capabilities: { caching: true },
     },
     {
       id: "gpt-5-nano",
-      displayName: "GPT-5 Nano",
+      displayName: "GPT-5 Nano (legacy)",
       provider: "openai",
       capabilities: { caching: true },
     },

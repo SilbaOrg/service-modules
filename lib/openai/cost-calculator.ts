@@ -9,10 +9,22 @@ import {
   type OpenAIUsage,
 } from "../types.ts";
 
-// Pricing matrix, based on OpenAI pricing as of August 2025
+// Pricing matrix, based on OpenAI pricing as of November 2025
 // All prices are per 1 million tokens (Standard tier)
 const PRICING: OpenAIModelPricing = {
-  // GPT-5 Series (Released August 2025)
+  // GPT-5.1 Series (Released November 2025)
+  [OpenAIModel.GPT_5_1]: {
+    input: 1.25,
+    cached: 0.125,
+    output: 10.0,
+  },
+  [OpenAIModel.GPT_5_1_CHAT_LATEST]: {
+    input: 1.25,
+    cached: 0.125,
+    output: 10.0,
+  },
+
+  // GPT-5 Series (Released August 2025, Legacy)
   [OpenAIModel.GPT_5]: {
     input: 1.25,
     cached: 0.125,
@@ -182,6 +194,9 @@ function normalizeModel(model: string): string {
 
   // Regular models
   if (modelLower.startsWith("gpt-4.5")) return OpenAIModel.GPT_4_5_PREVIEW;
+  if (modelLower === "gpt-5.1-chat-latest") return OpenAIModel.GPT_5_1_CHAT_LATEST;
+  if (modelLower === "gpt-5.1") return OpenAIModel.GPT_5_1;
+  if (modelLower === "gpt-5-chat-latest") return OpenAIModel.GPT_5_CHAT_LATEST;
   if (modelLower === "gpt-5-mini") return OpenAIModel.GPT_5_MINI;
   if (modelLower === "gpt-5-nano") return OpenAIModel.GPT_5_NANO;
   if (modelLower === "gpt-5") return OpenAIModel.GPT_5;
