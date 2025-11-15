@@ -202,9 +202,97 @@ function parseLogLevel(level?: string): LogLevel | undefined {
   return undefined;
 }
 
+/**
+ * Convert LogLevel enum to GELF syslog level
+ * GELF uses syslog severity levels:
+ * 0=Emergency, 1=Alert, 2=Critical, 3=Error, 4=Warning, 5=Notice, 6=Info, 7=Debug
+ */
+function logLevelToGelfLevel(level: LogLevel): number {
+  switch (level) {
+    case LogLevel.ERROR:
+      return 3; // Error
+    case LogLevel.WARN:
+      return 4; // Warning
+    case LogLevel.INFO:
+      return 6; // Informational
+    case LogLevel.DEBUG:
+      return 7; // Debug
+    case LogLevel.TRACE:
+      return 7; // Debug (GELF doesn't have TRACE)
+    default:
+      return 6; // Default to Info
+  }
+}
+
+/**
+ * Convert LogEntry to GELF format
+ *
+ * GELF (Graylog Extended Log Format) is used by Seq via seq-input-gelf.
+ * This ensures all log metadata is properly extracted by Seq.
+ */
+function convertToGelf(entry: LogEntry): Record<string, unknown> {
+  const {
+    timestamp,
+    level,
+    message,
+    service,
+    module,
+    ...customFields
+  } = entry;
+
+  // Convert ISO timestamp to Unix timestamp (seconds)
+  const unixTimestamp = new Date(timestamp).getTime() / 1000;
+
+  // Determine numeric log level
+  const numericLevel =
+    typeof level === "string"
+      ? logLevelToGelfLevel(LogLevel[level as keyof typeof LogLevel])
+      : logLevelToGelfLevel(level);
+
+  // Build GELF message with required fields
+  const gelfMessage: Record<string, unknown> = {
+    version: "1.1",
+    host: service,
+    short_message: message,
+    timestamp: unixTimestamp,
+    level: numericLevel,
+    _level_name: typeof level === "string" ? level : LogLevel[level],
+  };
+
+  // Add optional module
+  if (module) {
+    gelfMessage._module = module;
+  }
+
+  // Add all custom fields with underscore prefix (GELF requirement)
+  for (const [key, value] of Object.entries(customFields)) {
+    // GELF spec: custom fields must start with underscore
+    const gelfKey = key.startsWith("_") ? key : `_${key}`;
+
+    // Convert value to GELF-compatible type
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      gelfMessage[gelfKey] = value;
+    } else if (value === null || value === undefined) {
+      // Skip null/undefined values
+      continue;
+    } else {
+      // Serialize complex objects to JSON string
+      gelfMessage[gelfKey] = JSON.stringify(value);
+    }
+  }
+
+  return gelfMessage;
+}
+
 function outputLog(entry: LogEntry, format: "json" | "text"): void {
   if (format === "json") {
-    console.log(JSON.stringify(entry));
+    // Output GELF format for Seq ingestion via Docker GELF driver + seq-input-gelf
+    const gelfMessage = convertToGelf(entry);
+    console.log(JSON.stringify(gelfMessage));
   } else {
     const level = entry.level.padEnd(5);
     const module = entry.module ? `[${entry.module}]` : "";
