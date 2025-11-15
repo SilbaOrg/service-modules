@@ -257,6 +257,7 @@ function convertToGelf(entry: LogEntry): Record<string, unknown> {
     timestamp: unixTimestamp,
     level: numericLevel,
     _level_name: typeof level === "string" ? level : LogLevel[level],
+    _service: service,  // Add service as custom field (host gets overwritten by seq-input-gelf)
   };
 
   // Add optional module
