@@ -103,6 +103,11 @@ export const LLM_MODELS: ProviderModels = {
   anthropic: [
     // Latest Claude Models
     {
+      id: "claude-opus-4-5-20251101",
+      displayName: "Claude Opus 4.5 (2025-11-01)",
+      provider: "anthropic",
+    },
+    {
       id: "claude-opus-4-1-20250805",
       displayName: "Claude Opus 4.1 (2025-08-05)",
       provider: "anthropic",

@@ -29,6 +29,14 @@ import {
  */
 const MODEL_PRICING: AnthropicModelPricing = {
   // Claude 4 - Latest generation models
+  "claude-opus-4-5-20251101": {
+    inputBase: 5.0,
+    cacheWrite: 6.25,
+    cacheRead: 0.5,
+    output: 25.0,
+    batchInput: 2.5, // 50% discount
+    batchOutput: 12.5, // 50% discount
+  },
   "claude-opus-4-1-20250805": {
     inputBase: 15.0,
     cacheWrite: 18.75,
@@ -143,8 +151,9 @@ const MODEL_PRICING: AnthropicModelPricing = {
  */
 const MODEL_ALIASES: Record<string, string> = {
   // Claude 4 aliases
+  "claude-opus-4-5": "claude-opus-4-5-20251101",
+  "claude-opus-4-latest": "claude-opus-4-5-20251101",
   "claude-opus-4-1": "claude-opus-4-1-20250805",
-  "claude-opus-4-latest": "claude-opus-4-20250514",
   "claude-opus-4-0": "claude-opus-4-20250514",
 
   "claude-sonnet-4-5": "claude-sonnet-4-5-20250929",
