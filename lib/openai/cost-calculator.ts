@@ -1,7 +1,3 @@
-// OpenAI Cost Calculator
-// Calculates the estimated cost in USD for OpenAI API calls
-// based on the model, usage, and options, using the official price matrix.
-
 import {
   OpenAIModel,
   type CostDetails,
@@ -9,10 +5,7 @@ import {
   type OpenAIUsage,
 } from "../types.ts";
 
-// Pricing matrix, based on OpenAI pricing as of November 2025
-// All prices are per 1 million tokens (Standard tier)
 const PRICING: OpenAIModelPricing = {
-  // GPT-5.1 Series (Released November 2025)
   [OpenAIModel.GPT_5_1]: {
     input: 1.25,
     cached: 0.125,
@@ -24,7 +17,6 @@ const PRICING: OpenAIModelPricing = {
     output: 10.0,
   },
 
-  // GPT-5 Series (Released August 2025, Legacy)
   [OpenAIModel.GPT_5]: {
     input: 1.25,
     cached: 0.125,
@@ -46,13 +38,11 @@ const PRICING: OpenAIModelPricing = {
     output: 10.0,
   },
 
-  // GPT-4.5
   [OpenAIModel.GPT_4_5_PREVIEW]: {
     input: 75.0,
     output: 150.0,
   },
 
-  // GPT-4.1 Series
   [OpenAIModel.GPT_4_1]: {
     input: 2.0,
     cached: 0.5,
@@ -69,7 +59,6 @@ const PRICING: OpenAIModelPricing = {
     output: 0.4,
   },
 
-  // GPT-4o Series
   [OpenAIModel.GPT_4O]: {
     input: 2.5,
     cached: 1.25,
@@ -107,7 +96,6 @@ const PRICING: OpenAIModelPricing = {
     output: 10.0,
   },
 
-  // Reasoning Models
   [OpenAIModel.O1]: {
     input: 15.0,
     cached: 7.5,
@@ -142,7 +130,6 @@ const PRICING: OpenAIModelPricing = {
     output: 4.4,
   },
 
-  // Deep Research Models
   [OpenAIModel.O3_DEEP_RESEARCH]: {
     input: 10.0,
     cached: 2.5,
@@ -154,7 +141,6 @@ const PRICING: OpenAIModelPricing = {
     output: 8.0,
   },
 
-  // Other Models
   [OpenAIModel.COMPUTER_USE_PREVIEW]: {
     input: 3.0,
     output: 12.0,
@@ -162,7 +148,7 @@ const PRICING: OpenAIModelPricing = {
   [OpenAIModel.GPT_IMAGE_1]: {
     input: 5.0,
     cached: 1.25,
-    output: 0.0, // Image generation, no text output
+    output: 0.0,
   },
   [OpenAIModel.CODEX_MINI_LATEST]: {
     input: 1.5,
@@ -170,7 +156,6 @@ const PRICING: OpenAIModelPricing = {
     output: 6.0,
   },
 
-  // Legacy
   [OpenAIModel.GPT_3_5_TURBO]: {
     input: 0.5,
     output: 1.5,
@@ -178,23 +163,20 @@ const PRICING: OpenAIModelPricing = {
 };
 
 function normalizeModel(model: string): string {
-  // Check if it's already a valid model enum value
   if (Object.values(OpenAIModel).includes(model as OpenAIModel)) {
     return model;
   }
 
-  // Handle model names that might have version suffixes
   const modelLower = model.toLowerCase();
 
-  // Deep research models
   if (modelLower.startsWith("o4-mini-deep-research"))
     return OpenAIModel.O4_MINI_DEEP_RESEARCH;
   if (modelLower.startsWith("o3-deep-research"))
     return OpenAIModel.O3_DEEP_RESEARCH;
 
-  // Regular models
   if (modelLower.startsWith("gpt-4.5")) return OpenAIModel.GPT_4_5_PREVIEW;
-  if (modelLower === "gpt-5.1-chat-latest") return OpenAIModel.GPT_5_1_CHAT_LATEST;
+  if (modelLower === "gpt-5.1-chat-latest")
+    return OpenAIModel.GPT_5_1_CHAT_LATEST;
   if (modelLower === "gpt-5.1") return OpenAIModel.GPT_5_1;
   if (modelLower === "gpt-5-chat-latest") return OpenAIModel.GPT_5_CHAT_LATEST;
   if (modelLower === "gpt-5-mini") return OpenAIModel.GPT_5_MINI;
@@ -210,11 +192,10 @@ function normalizeModel(model: string): string {
   if (modelLower === "o4-mini") return OpenAIModel.O4_MINI;
   if (modelLower.startsWith("gpt-3.5-turbo")) return OpenAIModel.GPT_3_5_TURBO;
 
-  return model; // Return as-is if no match
+  return model;
 }
 
 function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
-  // Validate inputs
   if (!model) {
     throw new Error(`Model is required for cost calculation`);
   }
@@ -241,57 +222,47 @@ function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
     );
   }
 
-  // Convert token counts to millions for cost calculation
   const promptTokensInMillions = usage.prompt_tokens / 1_000_000;
   const completionTokensInMillions = usage.completion_tokens / 1_000_000;
   const cachedTokensInMillions = (usage.cached_tokens || 0) / 1_000_000;
 
-  // Calculate input cost
   let inputCost = 0;
 
   if (cachedTokensInMillions > 0 && pricing.cached !== undefined) {
-    // If we have cached tokens and the model supports caching
     const nonCachedTokensInMillions =
       promptTokensInMillions - cachedTokensInMillions;
     inputCost =
       nonCachedTokensInMillions * pricing.input +
       cachedTokensInMillions * pricing.cached;
   } else {
-    // Standard input pricing
     inputCost = promptTokensInMillions * pricing.input;
   }
 
-  // Calculate output cost
   const outputCost = completionTokensInMillions * pricing.output;
 
-  // Web search tokens are always charged at the model's input rate
   let webSearchTokenCost = 0;
   if (usage.web_search_tokens) {
     const webSearchTokensInMillions = usage.web_search_tokens / 1_000_000;
     webSearchTokenCost = webSearchTokensInMillions * pricing.input;
   }
 
-  // Web search queries are billed separately
   let webSearchQueryCost = 0;
   if (usage.web_search_queries) {
-    // Web search pricing varies by model:
-    // - GPT-4o search preview: $30 per 1000 queries
-    // - GPT-4o-mini search preview: $25 per 1000 queries  
-    // - Other models: Use GPT-4o pricing as default
-    let queryPricePerThousand = 30.0; // Default pricing
-    
+    let queryPricePerThousand = 30.0;
+
     if (normalizedModel === OpenAIModel.GPT_4O_MINI_SEARCH_PREVIEW) {
       queryPricePerThousand = 25.0;
     } else if (normalizedModel === OpenAIModel.GPT_4O_SEARCH_PREVIEW) {
       queryPricePerThousand = 30.0;
     }
-    
-    webSearchQueryCost = (usage.web_search_queries / 1000) * queryPricePerThousand;
+
+    webSearchQueryCost =
+      (usage.web_search_queries / 1000) * queryPricePerThousand;
   }
 
-  // Round to 6 decimals for precision
-  const totalCost = inputCost + outputCost + webSearchTokenCost + webSearchQueryCost;
-  
+  const totalCost =
+    inputCost + outputCost + webSearchTokenCost + webSearchQueryCost;
+
   const result = {
     input: Math.round((inputCost + webSearchTokenCost) * 1000000) / 1000000,
     output: Math.round(outputCost * 1000000) / 1000000,
@@ -300,7 +271,6 @@ function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
     webSearchQueryCost: Math.round(webSearchQueryCost * 1000000) / 1000000,
   };
 
-  // Validate calculated costs are valid numbers
   if (
     typeof result.input !== "number" ||
     isNaN(result.input) ||
