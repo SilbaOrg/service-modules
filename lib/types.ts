@@ -1,4 +1,3 @@
-// Generic response type
 interface ServiceResponse<T = unknown> {
   success: boolean;
   data?: T;
@@ -11,7 +10,6 @@ interface ServiceResponse<T = unknown> {
   };
 }
 
-// Logging types
 enum LogLevel {
   ERROR = 0,
   WARN = 1,
@@ -37,18 +35,11 @@ interface LogEntry {
   [key: string]: unknown;
 }
 
-/**
- * Type for flat log metadata - only allows primitive values
- * This ensures Loki/Grafana can properly parse and index log fields
- */
 type FlatLogMetadata = Record<
   string,
   string | number | boolean | null | undefined
 >;
 
-/**
- * Type guard to check if a value is a primitive (non-object)
- */
 function isPrimitive(value: unknown): boolean {
   return (
     value === null ||
@@ -59,10 +50,6 @@ function isPrimitive(value: unknown): boolean {
   );
 }
 
-/**
- * Validates that metadata contains only flat key-value pairs
- * Throws an error if nested objects are detected
- */
 function validateFlatMetadata(metadata: Record<string, unknown>): void {
   Object.entries(metadata).forEach(([key, value]) => {
     if (!isPrimitive(value)) {
@@ -77,7 +64,6 @@ function validateFlatMetadata(metadata: Record<string, unknown>): void {
   });
 }
 
-// CORS configuration type - Matches oakCors expected format
 interface CorsConfig {
   origin?:
     | string
@@ -107,7 +93,6 @@ type PromptPair = {
 };
 
 type CompanyInformation = {
-  // shortName: string;
   formalName: string;
   countryAssociated: Country;
   countryAssociatedISO: CountryISO;
@@ -117,141 +102,10 @@ type SilbaCitation = {
   url: string;
 };
 
-// Enhanced type definitions
-type PerplexityQueryResult = {
-  response: ServiceResponse<PerplexityChatResponseData>;
-  latencyMs: number;
-  promptIndex: number;
-  promptType: string;
-  cost_details: CostDetails;
-  usage_details: PerplexityUsage;
-};
-
-type PerplexityQueryCost = {
-  index: number;
-  type: string;
-  cost: number;
-  latencyMs: number;
-  promptTokens: number;
-  completionTokens: number;
-  totalTokens: number;
-};
-
-interface PerplexityMessage {
-  role: "system" | "user" | "assistant";
-  content: string | Array<unknown>;
-}
-
-interface PerplexityWebSearchOptions {
-  search_context_size: "low" | "medium" | "high";
-  user_location?: {
-    latitude?: number;
-    longitude?: number;
-    country: string;
-  };
-}
-
-interface PerplexitySearchDomainFilter {
-  includes?: string[];
-  excludes?: string[];
-}
-
-interface PerplexityRequestOptions {
-  max_tokens?: number;
-  temperature?: number;
-  top_p?: number;
-  search_domain_filter?: string[];
-  return_images?: boolean;
-  return_related_questions: boolean;
-  search_recency_filter?: string;
-  top_k?: number;
-  stream?: boolean;
-  presence_penalty?: number;
-  frequency_penalty?: number;
-  response_format?: Record<string, unknown>;
-  web_search_options: PerplexityWebSearchOptions;
-}
-
-interface PerplexityChatRequest extends PerplexityRequestOptions {
-  model: string;
-  messages: PerplexityMessage[];
-}
-
 type GenericUsage = {
   prompt_tokens: number;
   completion_tokens: number;
   total_tokens: number;
-};
-
-type PerplexityUsage = GenericUsage & {
-  search_context_size: "low" | "medium" | "high";
-  reasoning_tokens?: number;
-  citation_tokens?: number;
-};
-
-interface PerplexityChatResponseData {
-  id: string;
-  model: string;
-  usage: PerplexityUsage;
-  content: string;
-  created: number;
-  citations: string[];
-  fromCache: boolean;
-  relatedQuestions: string[];
-}
-
-interface PerplexityChatResponse {
-  success: boolean;
-  data: PerplexityChatResponseData | null;
-  error?: string;
-}
-
-// Perplexity API request type
-type PerplexityRequest = {
-  model: string;
-  messages: PerplexityMessage[];
-  web_search_options: {
-    search_context_size: "low" | "medium" | "high";
-  };
-  return_related_questions: boolean;
-  [key: string]: unknown;
-};
-
-// Full Perplexity API response type as returned by the API
-interface RawPerplexityApiResponse {
-  id: string;
-  model: string;
-  created: number;
-  usage: PerplexityUsage;
-  citations?: string[];
-  related_questions?: string[];
-  object: string;
-  choices: Array<{
-    index: number;
-    finish_reason: string;
-    message: {
-      role: string;
-      content: string;
-    };
-    delta?: {
-      role: string;
-      content: string;
-    };
-  }>;
-  [key: string]: unknown;
-}
-
-// Our simplified response type with only what we need
-type StrippedPerplexityChatResponse = {
-  id: string;
-  model: string;
-  created: number;
-  usage: PerplexityUsage;
-  cost: CostDetails;
-  citations: string[];
-  relatedQuestions: string[];
-  content: string; // Extracted from choices[0].message.content
-  fromCache?: boolean; // For tracking if this came from cache
 };
 
 type CostDetails = {
@@ -262,53 +116,28 @@ type CostDetails = {
   webSearchQueryCost?: number;
 };
 
-/**
- * Token pricing structure for Anthropic models ($ per million tokens)
- *
- * Prompt Caching:
- * - inputBase: Standard input tokens without caching
- * - cacheWrite: Cost to write tokens to cache (5-minute TTL)
- * - cacheRead: Cost to read cached tokens (significant savings)
- *
- * Batch Processing:
- * - batchInput/batchOutput: 50% discount when batch_mode is enabled
- * - Available for all models, processes asynchronously with <1 hour completion
- */
 interface AnthropicTokenPricing {
-  inputBase: number; // Base input price per million tokens
-  cacheWrite: number; // Cache write price per million tokens (5-minute TTL)
-  cacheRead: number; // Cache read price per million tokens (major savings)
-  output: number; // Output price per million tokens
-  batchInput?: number; // Batch input price per million tokens (50% discount)
-  batchOutput?: number; // Batch output price per million tokens (50% discount)
+  inputBase: number;
+  cacheWrite: number;
+  cacheRead: number;
+  output: number;
+  batchInput?: number;
+  batchOutput?: number;
 }
 
-/**
- * Mapping of model names to their pricing information
- */
 interface AnthropicModelPricing {
   [modelName: string]: AnthropicTokenPricing;
 }
 
-/**
- * Extended usage information with optional cache and batch mode fields
- *
- * Cache fields are populated when prompt caching is used:
- * - cache_hits: Tokens read from cache (cheap)
- * - cache_writes: Tokens written to cache (more expensive than base input)
- *
- * Batch mode provides 50% discount but processes asynchronously
- */
 interface AnthropicUsage {
   input_tokens: number;
   output_tokens: number;
-  cache_hits?: number; // Optional - from prompt caching (5-minute TTL)
-  cache_writes?: number; // Optional - from prompt caching
-  batch_mode?: boolean; // Optional - if batch processing was used (50% discount)
-  web_search_queries?: number; // Optional - count of web search queries performed
+  cache_hits?: number;
+  cache_writes?: number;
+  batch_mode?: boolean;
+  web_search_queries?: number;
 }
 
-// Anthropic API Types
 type MessageRole = "user" | "assistant";
 
 interface TextContent {
@@ -386,43 +215,23 @@ interface AnthropicChatResponse {
   silba_estimated_cost?: number;
 }
 
-enum PerplexityModel {
-  SONAR = "sonar",
-  SONAR_PRO = "sonar-pro",
-  SONAR_REASONING = "sonar-reasoning",
-  SONAR_REASONING_PRO = "sonar-reasoning-pro",
-  SONAR_DEEP_RESEARCH = "sonar-deep-research",
-}
-
-// OpenAI Types
 enum OpenAIModel {
-  // GPT-5.1 Series (Latest)
   GPT_5_1 = "gpt-5.1",
   GPT_5_1_CHAT_LATEST = "gpt-5.1-chat-latest",
-
-  // GPT-5 Series (Legacy)
   GPT_5 = "gpt-5",
   GPT_5_MINI = "gpt-5-mini",
   GPT_5_NANO = "gpt-5-nano",
   GPT_5_CHAT_LATEST = "gpt-5-chat-latest",
-
-  // GPT-4.5
   GPT_4_5_PREVIEW = "gpt-4.5-preview",
-
-  // GPT-4.1 Series
   GPT_4_1 = "gpt-4.1",
   GPT_4_1_MINI = "gpt-4.1-mini",
   GPT_4_1_NANO = "gpt-4.1-nano",
-
-  // GPT-4o Series
   GPT_4O = "gpt-4o",
   GPT_4O_MINI = "gpt-4o-mini",
   GPT_4O_AUDIO_PREVIEW = "gpt-4o-audio-preview",
   GPT_4O_REALTIME_PREVIEW = "gpt-4o-realtime-preview",
   GPT_4O_MINI_AUDIO_PREVIEW = "gpt-4o-mini-audio-preview",
   GPT_4O_MINI_REALTIME_PREVIEW = "gpt-4o-mini-realtime-preview",
-
-  // Reasoning Models
   O1 = "o1",
   O1_MINI = "o1-mini",
   O1_PRO = "o1-pro",
@@ -430,19 +239,13 @@ enum OpenAIModel {
   O3_MINI = "o3-mini",
   O3_PRO = "o3-pro",
   O4_MINI = "o4-mini",
-
-  // Deep Research Models
   O3_DEEP_RESEARCH = "o3-deep-research",
   O4_MINI_DEEP_RESEARCH = "o4-mini-deep-research",
-
-  // Other Models
   COMPUTER_USE_PREVIEW = "computer-use-preview",
   GPT_IMAGE_1 = "gpt-image-1",
   CODEX_MINI_LATEST = "codex-mini-latest",
   GPT_4O_MINI_SEARCH_PREVIEW = "gpt-4o-mini-search-preview",
   GPT_4O_SEARCH_PREVIEW = "gpt-4o-search-preview",
-
-  // Legacy
   GPT_3_5_TURBO = "gpt-3.5-turbo",
 }
 
@@ -453,7 +256,6 @@ type OpenAIUsage = GenericUsage & {
   web_search_queries?: number;
 };
 
-// OpenAI Responses API Types
 interface OpenAIToolWebSearch {
   type: "web_search_preview";
 }
@@ -517,7 +319,6 @@ interface OpenAIResponsesResponse {
   finish_reason: string;
 }
 
-// OpenAI Token Pricing ($ per million tokens)
 interface OpenAITokenPricing {
   input: number;
   output: number;
@@ -529,29 +330,8 @@ interface OpenAIModelPricing {
   [modelName: string]: OpenAITokenPricing;
 }
 
-//---------------------------------------------------------------
-
-// Type guard for Perplexity chat completion request
-function isPerplexityChatRequest(obj: unknown): obj is PerplexityRequest {
-  return (
-    typeof obj === "object" &&
-    obj !== null &&
-    "model" in obj &&
-    "messages" in obj
-  );
-}
-
-//---------------------------------------------------------------
-// Health Middleware Types
-
-/**
- * Health status enumeration
- */
 type HealthStatus = "healthy" | "unhealthy" | "degraded";
 
-/**
- * Enhanced health response with comprehensive metrics
- */
 interface EnhancedHealthResponse {
   status: HealthStatus;
   uptime_percentage: number;
@@ -561,11 +341,9 @@ interface EnhancedHealthResponse {
   requests_total: number;
   requests_successful: number;
   success_rate_percentage: number;
-  last_restart: string; // ISO 8601 timestamp
+  last_restart: string;
   service_specific?: Record<string, string | number | boolean>;
 }
-
-//---------------------------------------------------------------
 
 export type {
   AnthropicChatRequest,
@@ -578,6 +356,7 @@ export type {
   CostDetails,
   EnhancedHealthResponse,
   FlatLogMetadata,
+  GenericUsage,
   HealthStatus,
   LogEntry,
   LoggerConfig,
@@ -587,22 +366,10 @@ export type {
   OpenAITokenPricing,
   OpenAITool,
   OpenAIUsage,
-  PerplexityChatRequest,
-  PerplexityChatResponse,
-  PerplexityChatResponseData,
-  PerplexityMessage,
-  PerplexityQueryCost,
-  PerplexityQueryResult,
-  PerplexityRequest,
-  PerplexitySearchDomainFilter,
-  PerplexityUsage,
-  PerplexityWebSearchOptions,
   Prompt,
   PromptPair,
-  RawPerplexityApiResponse,
   ServiceResponse,
   SilbaCitation,
-  StrippedPerplexityChatResponse,
   SystemPrompt,
   UserPrompt,
 };
@@ -610,7 +377,5 @@ export type {
 export {
   LogLevel,
   OpenAIModel,
-  PerplexityModel,
-  isPerplexityChatRequest,
   validateFlatMetadata,
 };

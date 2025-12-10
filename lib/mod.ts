@@ -20,7 +20,6 @@ export * from "./llm-models.ts";
 
 // Provider-specific modules
 export * from "./openai/mod.ts";
-export * from "./perplexity/mod.ts";
 export * from "./anthropic/cost-calculator.ts";
 
 // Other modules
