@@ -41,25 +41,22 @@ function createLogger(
   serviceName: string,
   options: Partial<LoggerConfig> = {}
 ) {
-  // Get environment variables first
   const envLogLevel = parseLogLevel(Deno.env.get("LOG_LEVEL"));
   const envLogFormat = Deno.env.get("LOG_FORMAT") as
     | "json"
     | "text"
     | undefined;
 
-  const config: LoggerConfig = {
-    serviceName,
-    module: options.module,
-    // Apply options first
-    ...options,
-    // Then override with environment variables if they exist
-    minLevel:
-      envLogLevel !== undefined
-        ? envLogLevel
-        : options.minLevel || LogLevel.INFO,
-    format: envLogFormat || options.format || ("json" as "json" | "text"),
-  };
+  const minLevel =
+    envLogLevel !== undefined
+      ? envLogLevel
+      : options.minLevel ?? LogLevel.INFO;
+
+  const format = envLogFormat ?? options.format ?? "json";
+
+  const config: LoggerConfig = options.module !== undefined
+    ? { serviceName, module: options.module, minLevel, format }
+    : { serviceName, minLevel, format };
 
   function log(
     level: LogLevel,

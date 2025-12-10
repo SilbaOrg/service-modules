@@ -1,181 +1,120 @@
-// Centralized LLM Models Configuration
-// This module provides a single source of truth for all LLM models
-// across the Silba ecosystem
+import openaiModelsJson from "./models.openai.json" with { type: "json" };
+import anthropicModelsJson from "./models.anthropic.json" with { type: "json" };
 
-export interface ModelCapabilities {
-  webSearch?: boolean;
-  reasoning?: boolean;
-  deepResearch?: boolean;
-  caching?: boolean;
+interface OpenAIModelRaw {
+  id: string;
+  object: string;
+  created: number;
+  owned_by: string;
+}
+
+interface AnthropicModelRaw {
+  type: string;
+  id: string;
+  display_name: string;
+  created_at: string;
+}
+
+interface OpenAIModelsResponse {
+  object: string;
+  data: OpenAIModelRaw[];
+}
+
+interface AnthropicModelsResponse {
+  data: AnthropicModelRaw[];
+  has_more: boolean;
+  first_id: string;
+  last_id: string;
 }
 
 export interface ModelConfig {
   id: string;
   displayName: string;
-  provider: "openai" | "perplexity" | "mistral" | "anthropic";
-  capabilities?: ModelCapabilities;
+  provider: "openai" | "anthropic";
+  createdAt: Date;
 }
 
-export type ProviderModels = {
-  openai: ModelConfig[];
-  perplexity: ModelConfig[];
-  mistral: ModelConfig[];
-  anthropic: ModelConfig[];
-};
+const openaiResponse = openaiModelsJson as OpenAIModelsResponse;
+const anthropicResponse = anthropicModelsJson as AnthropicModelsResponse;
 
-export const LLM_MODELS: ProviderModels = {
-  openai: [
-    // GPT-5.1 Series - Latest OpenAI Models
-    {
-      id: "gpt-5.1",
-      displayName: "GPT-5.1",
-      provider: "openai",
-      capabilities: { caching: true },
-    },
-    {
-      id: "gpt-5.1-chat-latest",
-      displayName: "GPT-5.1 Chat Latest",
-      provider: "openai",
-      capabilities: { caching: true },
-    },
-    // GPT-5 Series - Legacy
-    {
-      id: "gpt-5",
-      displayName: "GPT-5 (legacy)",
-      provider: "openai",
-      capabilities: { caching: true },
-    },
-    {
-      id: "gpt-5-mini",
-      displayName: "GPT-5 Mini (legacy)",
-      provider: "openai",
-      capabilities: { caching: true },
-    },
-    {
-      id: "gpt-5-nano",
-      displayName: "GPT-5 Nano (legacy)",
-      provider: "openai",
-      capabilities: { caching: true },
-    },
-  ],
+const OPENAI_CHAT_MODEL_PREFIXES = [
+  "gpt-5",
+  "gpt-4",
+  "gpt-3.5",
+  "o1",
+  "o3",
+  "o4",
+  "chatgpt",
+];
 
-  perplexity: [
-    // New Sonar Models
-    { id: "sonar", displayName: "Sonar", provider: "perplexity" },
-    { id: "sonar-pro", displayName: "Sonar Pro", provider: "perplexity" },
-    {
-      id: "sonar-reasoning",
-      displayName: "Sonar Reasoning",
-      provider: "perplexity",
-      capabilities: { reasoning: true },
-    },
-    {
-      id: "sonar-reasoning-pro",
-      displayName: "Sonar Reasoning Pro",
-      provider: "perplexity",
-      capabilities: { reasoning: true },
-    },
-    {
-      id: "sonar-deep-research",
-      displayName: "Sonar Deep Research",
-      provider: "perplexity",
-      capabilities: { deepResearch: true },
-    },
-  ],
-
-  mistral: [
-    { id: "mistral-tiny", displayName: "Mistral Tiny", provider: "mistral" },
-    { id: "mistral-small", displayName: "Mistral Small", provider: "mistral" },
-    {
-      id: "mistral-medium",
-      displayName: "Mistral Medium",
-      provider: "mistral",
-    },
-    {
-      id: "mistral-large-latest",
-      displayName: "Mistral Large",
-      provider: "mistral",
-    },
-    { id: "codestral-latest", displayName: "Codestral", provider: "mistral" },
-    { id: "mistral-embed", displayName: "Mistral Embed", provider: "mistral" },
-  ],
-
-  anthropic: [
-    // Latest Claude Models
-    {
-      id: "claude-opus-4-5-20251101",
-      displayName: "Claude Opus 4.5 (2025-11-01)",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-opus-4-1-20250805",
-      displayName: "Claude Opus 4.1 (2025-08-05)",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-sonnet-4-5-20250929",
-      displayName: "Claude Sonnet 4.5 (2025-09-29)",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-sonnet-4-20250514",
-      displayName: "Claude Sonnet 4.0 (2025-05-14)",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-3-7-sonnet-20250219",
-      displayName: "Claude 3.7 Sonnet (2025-02-19)",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-3-5-sonnet-20241022",
-      displayName: "Claude 3.5 Sonnet (2024-10-22)",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-haiku-4-5-20251001",
-      displayName: "Claude Haiku 4.5 (2025-10-01)",
-      provider: "anthropic",
-    },
-    {
-      id: "claude-3-5-haiku-20241022",
-      displayName: "Claude Haiku 3.5 (2024-10-22)",
-      provider: "anthropic",
-    },
-  ],
-};
-
-// Helper function to get models by provider
-export function getModelsByProvider(
-  provider: keyof ProviderModels
-): ModelConfig[] {
-  return LLM_MODELS[provider] || [];
+function isOpenAIChatModel(modelId: string): boolean {
+  return OPENAI_CHAT_MODEL_PREFIXES.some((prefix) => modelId.startsWith(prefix));
 }
 
-// Helper function to find a specific model
-export function findModel(modelId: string): ModelConfig | undefined {
-  for (const provider of Object.keys(LLM_MODELS) as Array<
-    keyof ProviderModels
-  >) {
-    const model = LLM_MODELS[provider].find((m) => m.id === modelId);
-    if (model) return model;
+function formatOpenAIDisplayName(modelId: string): string {
+  return modelId
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+const OPENAI_MODELS: ModelConfig[] = openaiResponse.data
+  .filter((m) => isOpenAIChatModel(m.id))
+  .map((m) => ({
+    id: m.id,
+    displayName: formatOpenAIDisplayName(m.id),
+    provider: "openai" as const,
+    createdAt: new Date(m.created * 1000),
+  }));
+
+const ANTHROPIC_MODELS: ModelConfig[] = anthropicResponse.data.map((m) => ({
+  id: m.id,
+  displayName: m.display_name,
+  provider: "anthropic" as const,
+  createdAt: new Date(m.created_at),
+}));
+
+const ALL_OPENAI_MODEL_IDS = new Set(openaiResponse.data.map((m) => m.id));
+const ALL_ANTHROPIC_MODEL_IDS = new Set(anthropicResponse.data.map((m) => m.id));
+
+export function getModelsByProvider(provider: "openai" | "anthropic"): ModelConfig[] {
+  switch (provider) {
+    case "openai":
+      return OPENAI_MODELS;
+    case "anthropic":
+      return ANTHROPIC_MODELS;
   }
+}
+
+export function isValidModelId(modelId: string, provider: "openai" | "anthropic"): boolean {
+  switch (provider) {
+    case "openai":
+      return ALL_OPENAI_MODEL_IDS.has(modelId);
+    case "anthropic":
+      return ALL_ANTHROPIC_MODEL_IDS.has(modelId);
+  }
+}
+
+export function findModel(modelId: string): ModelConfig | undefined {
+  const openaiModel = OPENAI_MODELS.find((m) => m.id === modelId);
+  if (openaiModel) return openaiModel;
+
+  const anthropicModel = ANTHROPIC_MODELS.find((m) => m.id === modelId);
+  if (anthropicModel) return anthropicModel;
+
   return undefined;
 }
 
-// Helper function to get all models with specific capability
-export function getModelsWithCapability(
-  capability: keyof ModelCapabilities
-): ModelConfig[] {
-  const models: ModelConfig[] = [];
-  for (const provider of Object.keys(LLM_MODELS) as Array<
-    keyof ProviderModels
-  >) {
-    models.push(
-      ...LLM_MODELS[provider].filter(
-        (m) => m.capabilities?.[capability] === true
-      )
-    );
+export function getAllModelIds(provider: "openai" | "anthropic"): string[] {
+  switch (provider) {
+    case "openai":
+      return Array.from(ALL_OPENAI_MODEL_IDS);
+    case "anthropic":
+      return Array.from(ALL_ANTHROPIC_MODEL_IDS);
   }
-  return models;
 }
+
+export const LLM_MODELS = {
+  openai: OPENAI_MODELS,
+  anthropic: ANTHROPIC_MODELS,
+};

@@ -91,14 +91,32 @@ function createTrace(
 
   logger.info(`Creating trace: ${name}`, { traceId: options.traceId });
 
-  return langfuse.trace({
-    id: options.traceId || nanoid(),
+  const traceParams: {
+    id: string;
+    name: string;
+    userId?: string;
+    input?: unknown;
+    tags?: string[];
+    metadata?: Record<string, unknown>;
+  } = {
+    id: options.traceId ?? nanoid(),
     name,
-    userId: options.userId,
-    input: options.input,
-    tags: options.tags,
-    metadata: options.metadata,
-  });
+  };
+
+  if (options.userId !== undefined) {
+    traceParams.userId = options.userId;
+  }
+  if (options.input !== undefined) {
+    traceParams.input = options.input;
+  }
+  if (options.tags !== undefined) {
+    traceParams.tags = options.tags;
+  }
+  if (options.metadata !== undefined) {
+    traceParams.metadata = options.metadata;
+  }
+
+  return langfuse.trace(traceParams);
 }
 
 /**
@@ -158,13 +176,26 @@ function createGeneration(
     model: options.model,
   });
 
-  return parent.generation({
+  const generationParams: {
+    name: string;
+    model: string;
+    input: unknown;
+    modelParameters?: Record<string, string | number | boolean | string[] | null>;
+    metadata?: Record<string, unknown>;
+  } = {
     name,
     model: options.model,
-    modelParameters: options.modelParameters,
     input: options.input,
-    metadata: options.metadata,
-  });
+  };
+
+  if (options.modelParameters !== undefined) {
+    generationParams.modelParameters = options.modelParameters;
+  }
+  if (options.metadata !== undefined) {
+    generationParams.metadata = options.metadata;
+  }
+
+  return parent.generation(generationParams);
 }
 
 /**
@@ -257,10 +288,19 @@ function extractTraceContext(headers: Headers): {
   traceId?: string;
   parentId?: string;
 } {
-  return {
-    traceId: headers.get("x-langfuse-trace-id") || undefined,
-    parentId: headers.get("x-langfuse-parent-id") || undefined,
-  };
+  const result: { traceId?: string; parentId?: string } = {};
+
+  const traceId = headers.get("x-langfuse-trace-id");
+  if (traceId !== null) {
+    result.traceId = traceId;
+  }
+
+  const parentId = headers.get("x-langfuse-parent-id");
+  if (parentId !== null) {
+    result.parentId = parentId;
+  }
+
+  return result;
 }
 
 function createTraceHeaders(
