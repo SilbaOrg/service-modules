@@ -21,6 +21,7 @@ export * from "./llm-models.ts";
 // Provider-specific modules
 export * from "./openai/mod.ts";
 export * from "./anthropic/cost-calculator.ts";
+export * from "./google/mod.ts";
 
 // Other modules
 export * from "./firecrawl/mod.ts";

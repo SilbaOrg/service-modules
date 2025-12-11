@@ -330,6 +330,25 @@ interface OpenAIModelPricing {
   [modelName: string]: OpenAITokenPricing;
 }
 
+interface GoogleTokenPricing {
+  input: number;
+  output: number;
+  cacheRead?: number;
+  batchInput?: number;
+  batchOutput?: number;
+}
+
+interface GoogleModelPricing {
+  [modelName: string]: GoogleTokenPricing;
+}
+
+interface GoogleUsage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  cached_tokens?: number;
+  batch_mode?: boolean;
+}
+
 type HealthStatus = "healthy" | "unhealthy" | "degraded";
 
 interface EnhancedHealthResponse {
@@ -357,6 +376,9 @@ export type {
   EnhancedHealthResponse,
   FlatLogMetadata,
   GenericUsage,
+  GoogleModelPricing,
+  GoogleTokenPricing,
+  GoogleUsage,
   HealthStatus,
   LogEntry,
   LoggerConfig,
