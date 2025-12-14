@@ -6,6 +6,21 @@ import {
 } from "../types.ts";
 
 const PRICING: OpenAIModelPricing = {
+  [OpenAIModel.GPT_5_2]: {
+    input: 1.75,
+    cached: 0.175,
+    output: 14.0,
+  },
+  [OpenAIModel.GPT_5_2_CHAT_LATEST]: {
+    input: 1.75,
+    cached: 0.175,
+    output: 14.0,
+  },
+  [OpenAIModel.GPT_5_2_PRO]: {
+    input: 21.0,
+    output: 168.0,
+  },
+
   [OpenAIModel.GPT_5_1]: {
     input: 1.25,
     cached: 0.125,
@@ -175,6 +190,10 @@ function normalizeModel(model: string): string {
     return OpenAIModel.O3_DEEP_RESEARCH;
 
   if (modelLower.startsWith("gpt-4.5")) return OpenAIModel.GPT_4_5_PREVIEW;
+  if (modelLower === "gpt-5.2-chat-latest")
+    return OpenAIModel.GPT_5_2_CHAT_LATEST;
+  if (modelLower.startsWith("gpt-5.2-pro")) return OpenAIModel.GPT_5_2_PRO;
+  if (modelLower.startsWith("gpt-5.2")) return OpenAIModel.GPT_5_2;
   if (modelLower === "gpt-5.1-chat-latest")
     return OpenAIModel.GPT_5_1_CHAT_LATEST;
   if (modelLower === "gpt-5.1") return OpenAIModel.GPT_5_1;

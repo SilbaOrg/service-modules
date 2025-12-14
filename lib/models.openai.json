@@ -20,33 +20,33 @@
       "owned_by": "openai"
     },
     {
-      "id": "gpt-5.1-codex-max",
+      "id": "gpt-5.2-chat-latest",
       "object": "model",
-      "created": 1763671532,
+      "created": 1765344352,
       "owned_by": "system"
     },
     {
-      "id": "gpt-5.1-2025-11-13",
+      "id": "gpt-5.2-2025-12-11",
       "object": "model",
-      "created": 1762800353,
+      "created": 1765313028,
       "owned_by": "system"
     },
     {
-      "id": "gpt-5.1",
+      "id": "gpt-5.2",
       "object": "model",
-      "created": 1762800673,
+      "created": 1765313051,
       "owned_by": "system"
     },
     {
-      "id": "gpt-5.1-codex",
+      "id": "gpt-5.2-pro-2025-12-11",
       "object": "model",
-      "created": 1762988221,
+      "created": 1765343959,
       "owned_by": "system"
     },
     {
-      "id": "gpt-5.1-codex-mini",
+      "id": "gpt-5.2-pro",
       "object": "model",
-      "created": 1763007109,
+      "created": 1765343983,
       "owned_by": "system"
     },
     {
@@ -617,6 +617,36 @@
       "id": "gpt-5.1-chat-latest",
       "object": "model",
       "created": 1762547951,
+      "owned_by": "system"
+    },
+    {
+      "id": "gpt-5.1-2025-11-13",
+      "object": "model",
+      "created": 1762800353,
+      "owned_by": "system"
+    },
+    {
+      "id": "gpt-5.1",
+      "object": "model",
+      "created": 1762800673,
+      "owned_by": "system"
+    },
+    {
+      "id": "gpt-5.1-codex",
+      "object": "model",
+      "created": 1762988221,
+      "owned_by": "system"
+    },
+    {
+      "id": "gpt-5.1-codex-mini",
+      "object": "model",
+      "created": 1763007109,
+      "owned_by": "system"
+    },
+    {
+      "id": "gpt-5.1-codex-max",
+      "object": "model",
+      "created": 1763671532,
       "owned_by": "system"
     },
     {

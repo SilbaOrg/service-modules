@@ -216,6 +216,9 @@ interface AnthropicChatResponse {
 }
 
 enum OpenAIModel {
+  GPT_5_2 = "gpt-5.2",
+  GPT_5_2_CHAT_LATEST = "gpt-5.2-chat-latest",
+  GPT_5_2_PRO = "gpt-5.2-pro",
   GPT_5_1 = "gpt-5.1",
   GPT_5_1_CHAT_LATEST = "gpt-5.1-chat-latest",
   GPT_5 = "gpt-5",
