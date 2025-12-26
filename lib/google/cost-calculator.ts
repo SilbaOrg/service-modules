@@ -13,146 +13,17 @@ const PRICING: GoogleModelPricing = {
     batchInput: 1.0,
     batchOutput: 6.0,
   },
-
-  "gemini-2.5-pro": {
-    input: 1.25,
-    output: 10.0,
-    cacheRead: 0.125,
-    batchInput: 0.625,
-    batchOutput: 5.0,
-  },
-
-  "gemini-2.5-flash": {
-    input: 0.3,
-    output: 2.5,
-    cacheRead: 0.03,
-    batchInput: 0.15,
-    batchOutput: 1.25,
-  },
-  "gemini-2.5-flash-preview-09-2025": {
-    input: 0.3,
-    output: 2.5,
-    cacheRead: 0.03,
-    batchInput: 0.15,
-    batchOutput: 1.25,
-  },
-
-  "gemini-2.5-flash-lite": {
-    input: 0.1,
-    output: 0.4,
-    cacheRead: 0.01,
-    batchInput: 0.05,
-    batchOutput: 0.2,
-  },
-  "gemini-2.5-flash-lite-preview-09-2025": {
-    input: 0.1,
-    output: 0.4,
-    cacheRead: 0.01,
-    batchInput: 0.05,
-    batchOutput: 0.2,
-  },
-
-  "gemini-2.0-flash": {
-    input: 0.1,
-    output: 0.4,
-    cacheRead: 0.025,
-    batchInput: 0.05,
-    batchOutput: 0.2,
-  },
-  "gemini-2.0-flash-001": {
-    input: 0.1,
-    output: 0.4,
-    cacheRead: 0.025,
-    batchInput: 0.05,
-    batchOutput: 0.2,
-  },
-  "gemini-2.0-flash-exp": {
-    input: 0.1,
-    output: 0.4,
-    cacheRead: 0.025,
-    batchInput: 0.05,
-    batchOutput: 0.2,
-  },
-
-  "gemini-2.0-flash-lite": {
-    input: 0.075,
-    output: 0.3,
-    batchInput: 0.0375,
-    batchOutput: 0.15,
-  },
-  "gemini-2.0-flash-lite-001": {
-    input: 0.075,
-    output: 0.3,
-    batchInput: 0.0375,
-    batchOutput: 0.15,
-  },
-  "gemini-2.0-flash-lite-preview": {
-    input: 0.075,
-    output: 0.3,
-    batchInput: 0.0375,
-    batchOutput: 0.15,
-  },
-  "gemini-2.0-flash-lite-preview-02-05": {
-    input: 0.075,
-    output: 0.3,
-    batchInput: 0.0375,
-    batchOutput: 0.15,
-  },
-
-  "gemini-2.5-computer-use-preview-10-2025": {
-    input: 1.25,
-    output: 10.0,
-  },
-
-  "gemini-robotics-er-1.5-preview": {
-    input: 0.3,
-    output: 2.5,
-  },
-
-  "gemini-exp-1206": {
-    input: 1.25,
-    output: 10.0,
-    cacheRead: 0.125,
-    batchInput: 0.625,
-    batchOutput: 5.0,
-  },
-
-  "gemini-flash-latest": {
-    input: 0.3,
-    output: 2.5,
-    cacheRead: 0.03,
-    batchInput: 0.15,
-    batchOutput: 1.25,
-  },
-  "gemini-flash-lite-latest": {
-    input: 0.1,
-    output: 0.4,
-    cacheRead: 0.01,
-    batchInput: 0.05,
-    batchOutput: 0.2,
-  },
-  "gemini-pro-latest": {
-    input: 1.25,
-    output: 10.0,
-    cacheRead: 0.125,
-    batchInput: 0.625,
-    batchOutput: 5.0,
+  "gemini-3-flash-preview": {
+    input: 0.5,
+    output: 3.0,
+    cacheRead: 0.05,
+    batchInput: 0.25,
+    batchOutput: 1.5,
   },
 };
-
-const MODEL_ALIASES: Record<string, string> = {
-  "gemini-2.5-pro-latest": "gemini-2.5-pro",
-  "gemini-2.5-flash-latest": "gemini-2.5-flash",
-  "gemini-2.0-flash-latest": "gemini-2.0-flash",
-};
-
-function resolveModelName(modelName: string): string {
-  return MODEL_ALIASES[modelName] || modelName;
-}
 
 function getModelPricing(modelName: string): GoogleTokenPricing {
-  const resolvedName = resolveModelName(modelName);
-  const pricing = PRICING[resolvedName];
+  const pricing = PRICING[modelName];
 
   if (!pricing) {
     throw new Error(`Unknown Google model: ${modelName}`);
