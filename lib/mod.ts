@@ -5,6 +5,7 @@
 export * from "./types.ts";
 export * from "./utilities.ts";
 export * from "./logger.ts";
+export * from "./retry.ts";
 export * from "./health-middleware.ts";
 export * from "./logging-helpers.ts";
 export * from "./http-logging-middleware.ts";
