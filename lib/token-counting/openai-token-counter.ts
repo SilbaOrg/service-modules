@@ -1,20 +1,14 @@
-/**
- * OpenAI Token Counting Utilities
- * Uses tiktoken for local, synchronous token counting
- */
-
 import { encoding_for_model } from "tiktoken";
 
-/**
- * Count tokens for a given string using OpenAI's tokenization for GPT-5-mini.
- * GPT-5 models use the o200k_base encoding.
- *
- * This is a synchronous, local operation (no API call required).
- *
- * @param text - The text to count tokens for
- * @returns The number of tokens
- * @throws Error if text is not a string or if encoding fails
- */
+let cachedEncoder: ReturnType<typeof encoding_for_model> | null = null;
+
+function getEncoder(): ReturnType<typeof encoding_for_model> {
+  if (!cachedEncoder) {
+    cachedEncoder = encoding_for_model("gpt-5-mini");
+  }
+  return cachedEncoder;
+}
+
 export function countTokensOpenAI(text: string): number {
   if (typeof text !== "string") {
     throw new Error(`countTokensOpenAI expects a string, got ${typeof text}`);
@@ -24,10 +18,42 @@ export function countTokensOpenAI(text: string): number {
     return 0;
   }
 
-  const encoder = encoding_for_model("gpt-5-mini");
+  const encoder = getEncoder();
   const tokens = encoder.encode(text);
-  const count = tokens.length;
-  encoder.free();
+  return tokens.length;
+}
 
-  return count;
+export type TokenCountItem = {
+  id: string;
+  text: string;
+};
+
+export type TokenCountResult = {
+  id: string;
+  tokens: number;
+};
+
+const BATCH_SIZE = 20;
+
+function yieldToEventLoop(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+export async function countTokensOpenAIBatch(
+  items: Array<TokenCountItem>
+): Promise<Array<TokenCountResult>> {
+  const results: Array<TokenCountResult> = [];
+  const encoder = getEncoder();
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    const tokens = item.text.length === 0 ? 0 : encoder.encode(item.text).length;
+    results.push({ id: item.id, tokens });
+
+    if ((i + 1) % BATCH_SIZE === 0 && i < items.length - 1) {
+      await yieldToEventLoop();
+    }
+  }
+
+  return results;
 }
