@@ -242,7 +242,7 @@ export function createDatabaseLogger(serviceName: string, module = "database") {
  * Create a logger for external API calls with consistent metadata.
  *
  * @param serviceName - Name of the service
- * @param module - Module name (e.g., "api:supabase", "api:openai")
+ * @param module - Module name (e.g., "api:external", "api:openai")
  * @returns Logger with API-specific methods
  *
  * @example
