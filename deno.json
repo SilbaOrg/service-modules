@@ -1,6 +1,6 @@
 {
   "name": "@silba-org/service-modules",
-  "version": "1.12.0",
+  "version": "1.14.0",
   "exports": "./lib/mod.ts",
   "description": "Silba Service Modules",
   "license": "Proprietary",
@@ -12,7 +12,9 @@
   "imports": {
     "langfuse": "npm:langfuse@^3.38.6",
     "nanoid": "npm:nanoid@^5.1.6",
-    "tiktoken": "npm:tiktoken@^1.0.22"
+    "tiktoken": "npm:tiktoken@^1.0.22",
+    "@std/fs": "jsr:@std/fs@^1",
+    "@std/path": "jsr:@std/path@^1"
   },
   "fmt": {
     "useTabs": false,

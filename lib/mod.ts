@@ -30,3 +30,6 @@ export * from "./langfuse/mod.ts";
 
 // Token counting utilities
 export * from "./token-counting/mod.ts";
+
+// SQLite utilities
+export * from "./sqlite/mod.ts";
