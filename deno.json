@@ -13,8 +13,8 @@
     "langfuse": "npm:langfuse@^3.38.6",
     "nanoid": "npm:nanoid@^5.1.6",
     "tiktoken": "npm:tiktoken@^1.0.22",
-    "@std/fs": "jsr:@std/fs@^1",
-    "@std/path": "jsr:@std/path@^1"
+    "@std/fs": "jsr:@std/fs@^1.0.22",
+    "@std/path": "jsr:@std/path@^1.1.4"
   },
   "fmt": {
     "useTabs": false,
