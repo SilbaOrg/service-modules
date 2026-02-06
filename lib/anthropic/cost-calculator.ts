@@ -28,7 +28,16 @@ import {
  * All models support 200K context window and batch processing (50% discount)
  */
 const MODEL_PRICING: AnthropicModelPricing = {
-  // Claude 4 - Latest generation models
+  // Claude 4.6 - Latest generation model
+  "claude-opus-4-6": {
+    inputBase: 5.0,
+    cacheWrite: 6.25,
+    cacheRead: 0.5,
+    output: 25.0,
+    batchInput: 2.5,
+    batchOutput: 12.5,
+  },
+  // Claude 4.5 - Previous generation models
   "claude-opus-4-5-20251101": {
     inputBase: 5.0,
     cacheWrite: 6.25,
@@ -150,9 +159,11 @@ const MODEL_PRICING: AnthropicModelPricing = {
  * Use specific model IDs in production for consistent behavior.
  */
 const MODEL_ALIASES: Record<string, string> = {
-  // Claude 4 aliases
+  // Claude 4.6 aliases
+  "claude-opus-4-latest": "claude-opus-4-6",
+
+  // Claude 4.5 aliases
   "claude-opus-4-5": "claude-opus-4-5-20251101",
-  "claude-opus-4-latest": "claude-opus-4-5-20251101",
   "claude-opus-4-1": "claude-opus-4-1-20250805",
   "claude-opus-4-0": "claude-opus-4-20250514",
 
