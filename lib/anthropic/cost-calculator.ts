@@ -125,23 +125,7 @@ const MODEL_PRICING: AnthropicModelPricing = {
     batchOutput: 7.5,
   },
 
-  // Claude 3 - Original generation models
-  "claude-3-opus-20240229": {
-    inputBase: 15.0,
-    cacheWrite: 18.75,
-    cacheRead: 1.5,
-    output: 75.0,
-    batchInput: 7.5,
-    batchOutput: 37.5,
-  },
-  "claude-3-sonnet-20240229": {
-    inputBase: 3.0,
-    cacheWrite: 3.75,
-    cacheRead: 0.3,
-    output: 15.0,
-    batchInput: 1.5,
-    batchOutput: 7.5,
-  },
+  // Claude 3 - Original generation (only Haiku still in API)
   "claude-3-haiku-20240307": {
     inputBase: 0.25,
     cacheWrite: 0.3,
@@ -181,8 +165,6 @@ const MODEL_ALIASES: Record<string, string> = {
   "claude-3-5-haiku-latest": "claude-3-5-haiku-20241022",
   "claude-3-5-sonnet-latest": "claude-3-5-sonnet-20241022",
 
-  // Claude 3 aliases
-  "claude-3-opus-latest": "claude-3-opus-20240229",
 };
 
 /**
