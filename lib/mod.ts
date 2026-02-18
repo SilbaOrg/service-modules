@@ -33,3 +33,6 @@ export * from "./token-counting/mod.ts";
 
 // SQLite utilities
 export * from "./sqlite/mod.ts";
+
+// User-agent parsing
+export * from "./user-agent-parser.ts";
