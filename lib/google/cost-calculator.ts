@@ -6,7 +6,7 @@ import type {
 } from "../types.ts";
 
 const PRICING: GoogleModelPricing = {
-  "gemini-3-pro-preview": {
+  "gemini-3.1-pro-preview": {
     input: 2.0,
     output: 12.0,
     cacheRead: 0.2,

@@ -1,10 +1,10 @@
 {
   "models": [
     {
-      "name": "models/gemini-3-pro-preview",
-      "version": "3-pro-preview-11-2025",
-      "displayName": "Gemini 3 Pro Preview",
-      "description": "Gemini 3 Pro Preview",
+      "name": "models/gemini-3.1-pro-preview",
+      "version": "3.1-pro-preview-02-2026",
+      "displayName": "Gemini 3.1 Pro Preview",
+      "description": "Gemini 3.1 Pro Preview",
       "inputTokenLimit": 1048576,
       "outputTokenLimit": 65536,
       "supportedGenerationMethods": [
