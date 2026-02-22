@@ -16,13 +16,16 @@ export * from "./correlation/mod.ts";
 // Logging utilities
 export * from "./logging/document-context.ts";
 
-// LLM Models Configuration
+// LLM Model Registry (single source of truth)
+export * from "./models/mod.ts";
+
+// LLM Models Configuration (derives from registry)
 export * from "./llm-models.ts";
 
 // Provider-specific modules
 export * from "./openai/mod.ts";
 export * from "./anthropic/cost-calculator.ts";
-export * from "./google/mod.ts";
+export * from "./google/cost-calculator.ts";
 
 // Other modules
 export * from "./firecrawl/mod.ts";
