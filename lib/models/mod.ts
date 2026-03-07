@@ -7,8 +7,10 @@ export type {
   GooglePricing,
   LLMProvider,
   ModelConfig,
+  OpenAIFlatPricing,
   OpenAIModelEntry,
   OpenAIPricing,
+  OpenAITieredPricing,
 } from "./types.ts";
 
 export {
@@ -25,6 +27,7 @@ export {
   OPENAI_ALIASES,
   OPENAI_MODEL_IDS,
   OPENAI_MODELS,
+  OPENAI_TIERED_PRICING_THRESHOLD_TOKENS,
   resolveOpenAIModelName,
 } from "./openai.ts";
 export type { OpenAIModelId } from "./openai.ts";

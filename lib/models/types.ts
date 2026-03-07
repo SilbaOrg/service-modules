@@ -26,11 +26,24 @@ interface AnthropicTieredPricing {
 
 type AnthropicPricing = AnthropicFlatPricing | AnthropicTieredPricing;
 
-interface OpenAIPricing {
+interface OpenAIFlatPricing {
+  tiered: false;
   input: number;
   output: number;
   cached: number;
 }
+
+interface OpenAITieredPricing {
+  tiered: true;
+  input: number;
+  inputOverThreshold: number;
+  output: number;
+  outputOverThreshold: number;
+  cached: number;
+  cachedOverThreshold: number;
+}
+
+type OpenAIPricing = OpenAIFlatPricing | OpenAITieredPricing;
 
 interface GooglePricing {
   input: number;
@@ -76,6 +89,8 @@ export type {
   GooglePricing,
   LLMProvider,
   ModelConfig,
+  OpenAIFlatPricing,
   OpenAIModelEntry,
   OpenAIPricing,
+  OpenAITieredPricing,
 };
