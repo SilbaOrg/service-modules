@@ -1,15 +1,16 @@
 import type { GoogleModelEntry } from "./types.ts";
+import { GOOGLE_MODEL_ID } from "./ids.ts";
 
 const GOOGLE_MODEL_IDS = [
-  "gemini-3.1-pro-preview",
-  "gemini-3-flash-preview",
+  GOOGLE_MODEL_ID.GEMINI_3_1_PRO_PREVIEW,
+  GOOGLE_MODEL_ID.GEMINI_3_FLASH_PREVIEW,
 ] as const;
 
 type GoogleModelId = typeof GOOGLE_MODEL_IDS[number];
 
 const GOOGLE_MODELS: ReadonlyArray<GoogleModelEntry> = [
   {
-    id: "gemini-3.1-pro-preview",
+    id: GOOGLE_MODEL_ID.GEMINI_3_1_PRO_PREVIEW,
     displayName: "Gemini 3.1 Pro Preview",
     supportsVision: true,
     pricing: {
@@ -21,7 +22,7 @@ const GOOGLE_MODELS: ReadonlyArray<GoogleModelEntry> = [
     },
   },
   {
-    id: "gemini-3-flash-preview",
+    id: GOOGLE_MODEL_ID.GEMINI_3_FLASH_PREVIEW,
     displayName: "Gemini 3 Flash Preview",
     supportsVision: true,
     pricing: {
@@ -38,7 +39,9 @@ function findGoogleModel(modelName: string): GoogleModelEntry {
   const model = GOOGLE_MODELS.find((m) => m.id === modelName);
   if (!model) {
     throw new Error(
-      `Unknown Google model: ${modelName}. Available: ${GOOGLE_MODEL_IDS.join(", ")}`,
+      `Unknown Google model: ${modelName}. Available: ${
+        GOOGLE_MODEL_IDS.join(", ")
+      }`,
     );
   }
   return model;

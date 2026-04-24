@@ -1,80 +1,65 @@
 import type { OpenAIModelEntry } from "./types.ts";
-
-const OPENAI_TIERED_PRICING_THRESHOLD_TOKENS = 272_000;
+import { OPENAI_MODEL_ID } from "./ids.ts";
 
 const OPENAI_MODEL_IDS = [
-  "gpt-5.4",
-  "gpt-5-mini",
-  "gpt-5-nano",
+  OPENAI_MODEL_ID.GPT_5_5,
+  OPENAI_MODEL_ID.GPT_5_5_PRO,
+  OPENAI_MODEL_ID.GPT_5_4_MINI,
+  OPENAI_MODEL_ID.GPT_5_4_NANO,
 ] as const;
 
 type OpenAIModelId = typeof OPENAI_MODEL_IDS[number];
 
 const OPENAI_MODELS: ReadonlyArray<OpenAIModelEntry> = [
   {
-    id: "gpt-5.4",
-    displayName: "GPT 5.4",
+    id: OPENAI_MODEL_ID.GPT_5_5,
+    displayName: "GPT-5.5",
     supportsVision: true,
     pricing: {
-      tiered: true,
-      input: 2.5,
-      inputOverThreshold: 5.0,
-      output: 15.0,
-      outputOverThreshold: 22.5,
-      cached: 0.25,
-      cachedOverThreshold: 0.5,
+      input: 5.0,
+      output: 30.0,
+      cached: 0.5,
     },
   },
   {
-    id: "gpt-5-mini",
-    displayName: "GPT 5 Mini",
-    supportsVision: false,
+    id: OPENAI_MODEL_ID.GPT_5_5_PRO,
+    displayName: "GPT-5.5 Pro",
+    supportsVision: true,
     pricing: {
-      tiered: false,
-      input: 0.25,
-      output: 2.0,
-      cached: 0.025,
+      input: 30.0,
+      output: 180.0,
+      cached: 3.0,
     },
   },
   {
-    id: "gpt-5-nano",
-    displayName: "GPT 5 Nano",
+    id: OPENAI_MODEL_ID.GPT_5_4_MINI,
+    displayName: "GPT-5.4 Mini",
+    supportsVision: true,
+    pricing: {
+      input: 0.75,
+      output: 4.5,
+      cached: 0.075,
+    },
+  },
+  {
+    id: OPENAI_MODEL_ID.GPT_5_4_NANO,
+    displayName: "GPT-5.4 Nano",
     supportsVision: false,
     pricing: {
-      tiered: false,
-      input: 0.05,
-      output: 0.4,
-      cached: 0.005,
+      input: 0.2,
+      output: 1.25,
+      cached: 0.02,
     },
   },
 ];
 
-const OPENAI_ALIASES: ReadonlyMap<string, OpenAIModelId> = new Map([
-  ["gpt-5.4-2026-03-05", "gpt-5.4"],
-]);
-
-function resolveOpenAIModelName(modelName: string): string {
-  const fromAlias = OPENAI_ALIASES.get(modelName);
-  if (fromAlias) return fromAlias;
-
-  const withoutDateSuffix = modelName.replace(/-\d{4}-\d{2}-\d{2}$/, "");
-  const fromAliasAfterNormalize = OPENAI_ALIASES.get(withoutDateSuffix);
-  if (fromAliasAfterNormalize) return fromAliasAfterNormalize;
-
-  const matchesKnownModel = OPENAI_MODELS.find(
-    (m) => m.id === withoutDateSuffix,
-  );
-  if (matchesKnownModel) return matchesKnownModel.id;
-
-  return modelName;
-}
-
 function findOpenAIModel(modelName: string): OpenAIModelEntry {
-  const resolvedName = resolveOpenAIModelName(modelName);
-  const model = OPENAI_MODELS.find((m) => m.id === resolvedName);
+  const model = OPENAI_MODELS.find((m) => m.id === modelName);
   if (!model) {
     throw new Error(
-      `Unknown OpenAI model: ${modelName}. Available: ${OPENAI_MODEL_IDS.join(", ")}`,
+      `Unknown OpenAI model: ${modelName}. Available: ${
+        OPENAI_MODEL_IDS.join(", ")
+      }`,
     );
   }
   return model;
@@ -82,11 +67,8 @@ function findOpenAIModel(modelName: string): OpenAIModelEntry {
 
 export {
   findOpenAIModel,
-  OPENAI_ALIASES,
   OPENAI_MODEL_IDS,
   OPENAI_MODELS,
-  OPENAI_TIERED_PRICING_THRESHOLD_TOKENS,
-  resolveOpenAIModelName,
 };
 
 export type { OpenAIModelId };

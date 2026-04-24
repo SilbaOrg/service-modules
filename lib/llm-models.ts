@@ -8,14 +8,22 @@ import {
   isValidModelId,
   modelSupportsVision,
 } from "./models/mod.ts";
+import {
+  ANTHROPIC_MODEL_ID,
+  GOOGLE_MODEL_ID,
+  OPENAI_MODEL_ID,
+} from "./models/ids.ts";
 
 export type { LLMProvider, ModelConfig };
 
 export {
+  ANTHROPIC_MODEL_ID,
   getAllModelIds,
   getModelsByProvider,
+  GOOGLE_MODEL_ID,
   isValidModelId,
   modelSupportsVision,
+  OPENAI_MODEL_ID,
 };
 
 function findModel(modelId: string): ModelConfig | undefined {

@@ -1,17 +1,24 @@
 export type {
-  AnthropicFlatPricing,
   AnthropicModelEntry,
   AnthropicPricing,
-  AnthropicTieredPricing,
   GoogleModelEntry,
   GooglePricing,
   LLMProvider,
   ModelConfig,
-  OpenAIFlatPricing,
   OpenAIModelEntry,
   OpenAIPricing,
-  OpenAITieredPricing,
 } from "./types.ts";
+
+export {
+  ANTHROPIC_MODEL_ID,
+  GOOGLE_MODEL_ID,
+  OPENAI_MODEL_ID,
+} from "./ids.ts";
+export type {
+  AnthropicModelIdValue,
+  GoogleModelIdValue,
+  OpenAIModelIdValue,
+} from "./ids.ts";
 
 export {
   ANTHROPIC_ALIASES,
@@ -24,11 +31,8 @@ export type { AnthropicModelId } from "./anthropic.ts";
 
 export {
   findOpenAIModel,
-  OPENAI_ALIASES,
   OPENAI_MODEL_IDS,
   OPENAI_MODELS,
-  OPENAI_TIERED_PRICING_THRESHOLD_TOKENS,
-  resolveOpenAIModelName,
 } from "./openai.ts";
 export type { OpenAIModelId } from "./openai.ts";
 
@@ -44,7 +48,9 @@ import { ANTHROPIC_MODEL_IDS, ANTHROPIC_MODELS } from "./anthropic.ts";
 import { OPENAI_MODEL_IDS, OPENAI_MODELS } from "./openai.ts";
 import { GOOGLE_MODEL_IDS, GOOGLE_MODELS } from "./google.ts";
 
-function getModelsByProvider(provider: LLMProvider): ReadonlyArray<ModelConfig> {
+function getModelsByProvider(
+  provider: LLMProvider,
+): ReadonlyArray<ModelConfig> {
   switch (provider) {
     case "openai":
       return OPENAI_MODELS.map((m) => ({
@@ -89,7 +95,10 @@ function getAllModelIds(provider: LLMProvider): ReadonlyArray<string> {
   }
 }
 
-function modelSupportsVision(provider: LLMProvider, modelId: string): boolean {
+function modelSupportsVision(
+  provider: LLMProvider,
+  modelId: string,
+): boolean {
   switch (provider) {
     case "openai": {
       const model = OPENAI_MODELS.find((m) => m.id === modelId);
