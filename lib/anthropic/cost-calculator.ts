@@ -5,48 +5,6 @@ import {
 } from "../models/anthropic.ts";
 import type { AnthropicPricing } from "../models/types.ts";
 
-const TIERED_PRICING_THRESHOLD_TOKENS = 200_000;
-
-function selectInputBaseRate(
-  pricing: AnthropicPricing,
-  inputTokens: number,
-): number {
-  if (pricing.tiered && inputTokens > TIERED_PRICING_THRESHOLD_TOKENS) {
-    return pricing.inputBaseOver200k;
-  }
-  return pricing.inputBase;
-}
-
-function selectOutputRate(
-  pricing: AnthropicPricing,
-  inputTokens: number,
-): number {
-  if (pricing.tiered && inputTokens > TIERED_PRICING_THRESHOLD_TOKENS) {
-    return pricing.outputOver200k;
-  }
-  return pricing.output;
-}
-
-function selectCacheWriteRate(
-  pricing: AnthropicPricing,
-  inputTokens: number,
-): number {
-  if (pricing.tiered && inputTokens > TIERED_PRICING_THRESHOLD_TOKENS) {
-    return pricing.cacheWriteOver200k;
-  }
-  return pricing.cacheWrite;
-}
-
-function selectCacheReadRate(
-  pricing: AnthropicPricing,
-  inputTokens: number,
-): number {
-  if (pricing.tiered && inputTokens > TIERED_PRICING_THRESHOLD_TOKENS) {
-    return pricing.cacheReadOver200k;
-  }
-  return pricing.cacheRead;
-}
-
 function calculateInputCost(
   pricing: AnthropicPricing,
   usage: AnthropicUsage,
@@ -69,15 +27,11 @@ function calculateInputCost(
       inputTokensInMillions - cacheHitsInMillions - cacheWritesInMillions,
     );
 
-    const cacheReadRate = selectCacheReadRate(pricing, usage.input_tokens);
-    const cacheWriteRate = selectCacheWriteRate(pricing, usage.input_tokens);
-
-    cost += cacheHitsInMillions * cacheReadRate;
-    cost += cacheWritesInMillions * cacheWriteRate;
+    cost += cacheHitsInMillions * pricing.cacheRead;
+    cost += cacheWritesInMillions * pricing.cacheWrite5m;
   }
 
-  const inputBaseRate = selectInputBaseRate(pricing, usage.input_tokens);
-  cost += baseInputTokensInMillions * inputBaseRate;
+  cost += baseInputTokensInMillions * pricing.inputBase;
 
   return cost;
 }
@@ -92,8 +46,7 @@ function calculateOutputCost(
     return outputTokensInMillions * pricing.batchOutput;
   }
 
-  const outputRate = selectOutputRate(pricing, usage.input_tokens);
-  return outputTokensInMillions * outputRate;
+  return outputTokensInMillions * pricing.output;
 }
 
 function calculateWebSearchCost(webSearchQueries: number): number {

@@ -1,40 +1,5 @@
 import type { CostDetails, OpenAIUsage } from "../types.ts";
-import type { OpenAIPricing } from "../models/types.ts";
-import {
-  findOpenAIModel,
-  OPENAI_TIERED_PRICING_THRESHOLD_TOKENS,
-  resolveOpenAIModelName,
-} from "../models/openai.ts";
-
-function selectInputRate(
-  pricing: OpenAIPricing,
-  promptTokens: number,
-): number {
-  if (pricing.tiered && promptTokens > OPENAI_TIERED_PRICING_THRESHOLD_TOKENS) {
-    return pricing.inputOverThreshold;
-  }
-  return pricing.input;
-}
-
-function selectOutputRate(
-  pricing: OpenAIPricing,
-  promptTokens: number,
-): number {
-  if (pricing.tiered && promptTokens > OPENAI_TIERED_PRICING_THRESHOLD_TOKENS) {
-    return pricing.outputOverThreshold;
-  }
-  return pricing.output;
-}
-
-function selectCachedRate(
-  pricing: OpenAIPricing,
-  promptTokens: number,
-): number {
-  if (pricing.tiered && promptTokens > OPENAI_TIERED_PRICING_THRESHOLD_TOKENS) {
-    return pricing.cachedOverThreshold;
-  }
-  return pricing.cached;
-}
+import { findOpenAIModel } from "../models/openai.ts";
 
 function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
   if (!model) {
@@ -52,35 +17,30 @@ function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
     throw new Error(`Invalid completion_tokens: ${usage.completion_tokens}`);
   }
 
-  const resolvedModel = resolveOpenAIModelName(model);
-  const modelEntry = findOpenAIModel(resolvedModel);
+  const modelEntry = findOpenAIModel(model);
   const { pricing } = modelEntry;
 
   const promptTokensInMillions = usage.prompt_tokens / 1_000_000;
   const completionTokensInMillions = usage.completion_tokens / 1_000_000;
   const cachedTokensInMillions = (usage.cached_tokens ?? 0) / 1_000_000;
 
-  const inputRate = selectInputRate(pricing, usage.prompt_tokens);
-  const cachedRate = selectCachedRate(pricing, usage.prompt_tokens);
-  const outputRate = selectOutputRate(pricing, usage.prompt_tokens);
-
   let inputCost = 0;
 
   if (cachedTokensInMillions > 0) {
     const nonCachedTokensInMillions =
       promptTokensInMillions - cachedTokensInMillions;
-    inputCost = nonCachedTokensInMillions * inputRate +
-      cachedTokensInMillions * cachedRate;
+    inputCost = nonCachedTokensInMillions * pricing.input +
+      cachedTokensInMillions * pricing.cached;
   } else {
-    inputCost = promptTokensInMillions * inputRate;
+    inputCost = promptTokensInMillions * pricing.input;
   }
 
-  const outputCost = completionTokensInMillions * outputRate;
+  const outputCost = completionTokensInMillions * pricing.output;
 
   let webSearchTokenCost = 0;
   if (usage.web_search_tokens) {
     const webSearchTokensInMillions = usage.web_search_tokens / 1_000_000;
-    webSearchTokenCost = webSearchTokensInMillions * inputRate;
+    webSearchTokenCost = webSearchTokensInMillions * pricing.input;
   }
 
   let webSearchQueryCost = 0;
