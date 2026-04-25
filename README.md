@@ -278,8 +278,8 @@ Each model has the following structure:
    // In lib/llm-models.ts
    anthropic: [
      {
-       id: "claude-sonnet-4-5-20250929",
-       displayName: "Claude Sonnet 4.5 (2025-09-29)",
+       id: "claude-sonnet-4-6",
+       displayName: "Claude Sonnet 4.6",
        provider: "anthropic",
        capabilities: { caching: true },
      },
@@ -290,7 +290,7 @@ Each model has the following structure:
 2. **If Anthropic model**: Add pricing to `lib/anthropic/cost-calculator.ts`:
    ```typescript
    // Add to MODEL_PRICING
-   "claude-sonnet-4-5-20250929": {
+   "claude-sonnet-4-6": {
      inputBase: 3.0,
      cacheWrite: 3.75,
      cacheRead: 0.3,
@@ -300,7 +300,7 @@ Each model has the following structure:
    }
 
    // Add to MODEL_ALIASES
-   "claude-sonnet-4-5": "claude-sonnet-4-5-20250929"
+   "claude-sonnet-4-6": "claude-sonnet-4-6"
    ```
 
 3. **Changes automatically propagate**:

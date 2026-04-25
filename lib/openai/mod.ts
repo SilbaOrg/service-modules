@@ -224,10 +224,9 @@ async function openAIResponsesCreate(
   };
 }
 
-// --- Convenience functions for specific use cases ---
 function openAIDeepResearch(
   prompt: string,
-  model: string = "gpt-5.4"
+  model: string,
 ): Promise<
   ServiceResponse<OpenAIResponsesResponse & { cost_details: CostDetails }>
 > {
@@ -243,7 +242,7 @@ function openAIDeepResearch(
 
 function openAIWebSearch(
   prompt: string,
-  model: string = "gpt-5.4"
+  model: string,
 ): Promise<
   ServiceResponse<OpenAIResponsesResponse & { cost_details: CostDetails }>
 > {

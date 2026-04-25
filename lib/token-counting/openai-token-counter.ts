@@ -1,10 +1,10 @@
-import { encoding_for_model } from "tiktoken";
+import { get_encoding } from "tiktoken";
 
-let cachedEncoder: ReturnType<typeof encoding_for_model> | null = null;
+let cachedEncoder: ReturnType<typeof get_encoding> | null = null;
 
-function getEncoder(): ReturnType<typeof encoding_for_model> {
+function getEncoder(): ReturnType<typeof get_encoding> {
   if (!cachedEncoder) {
-    cachedEncoder = encoding_for_model("gpt-5-mini");
+    cachedEncoder = get_encoding("o200k_base");
   }
   return cachedEncoder;
 }
