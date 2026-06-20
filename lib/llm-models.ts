@@ -2,6 +2,7 @@ import type { LLMProvider, ModelConfig } from "./models/types.ts";
 import { ANTHROPIC_MODELS } from "./models/anthropic.ts";
 import { OPENAI_MODELS } from "./models/openai.ts";
 import { GOOGLE_MODELS } from "./models/google.ts";
+import { DEEPSEEK_MODELS } from "./models/deepseek.ts";
 import {
   getAllModelIds,
   getModelsByProvider,
@@ -10,6 +11,7 @@ import {
 } from "./models/mod.ts";
 import {
   ANTHROPIC_MODEL_ID,
+  DEEPSEEK_MODEL_ID,
   GOOGLE_MODEL_ID,
   OPENAI_MODEL_ID,
 } from "./models/ids.ts";
@@ -18,6 +20,7 @@ export type { LLMProvider, ModelConfig };
 
 export {
   ANTHROPIC_MODEL_ID,
+  DEEPSEEK_MODEL_ID,
   getAllModelIds,
   getModelsByProvider,
   GOOGLE_MODEL_ID,
@@ -31,6 +34,7 @@ function findModel(modelId: string): ModelConfig | undefined {
     "openai",
     "anthropic",
     "google",
+    "deepseek",
   ];
   for (const provider of allProviders) {
     const models = getModelsByProvider(provider);
@@ -57,5 +61,10 @@ export const LLM_MODELS = {
     id: m.id,
     displayName: m.displayName,
     provider: "google" as const,
+  })),
+  deepseek: DEEPSEEK_MODELS.map((m) => ({
+    id: m.id,
+    displayName: m.displayName,
+    provider: "deepseek" as const,
   })),
 };

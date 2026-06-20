@@ -11,11 +11,13 @@ export type {
 
 export {
   ANTHROPIC_MODEL_ID,
+  DEEPSEEK_MODEL_ID,
   GOOGLE_MODEL_ID,
   OPENAI_MODEL_ID,
 } from "./ids.ts";
 export type {
   AnthropicModelIdValue,
+  DeepSeekModelIdValue,
   GoogleModelIdValue,
   OpenAIModelIdValue,
 } from "./ids.ts";
@@ -43,10 +45,18 @@ export {
 } from "./google.ts";
 export type { GoogleModelId } from "./google.ts";
 
+export {
+  DEEPSEEK_MODEL_IDS,
+  DEEPSEEK_MODELS,
+  findDeepSeekModel,
+} from "./deepseek.ts";
+export type { DeepSeekModelId } from "./deepseek.ts";
+
 import type { LLMProvider, ModelConfig } from "./types.ts";
 import { ANTHROPIC_MODEL_IDS, ANTHROPIC_MODELS } from "./anthropic.ts";
 import { OPENAI_MODEL_IDS, OPENAI_MODELS } from "./openai.ts";
 import { GOOGLE_MODEL_IDS, GOOGLE_MODELS } from "./google.ts";
+import { DEEPSEEK_MODEL_IDS, DEEPSEEK_MODELS } from "./deepseek.ts";
 
 function getModelsByProvider(
   provider: LLMProvider,
@@ -70,6 +80,12 @@ function getModelsByProvider(
         displayName: m.displayName,
         provider: "google" as const,
       }));
+    case "deepseek":
+      return DEEPSEEK_MODELS.map((m) => ({
+        id: m.id,
+        displayName: m.displayName,
+        provider: "deepseek" as const,
+      }));
   }
 }
 
@@ -81,6 +97,8 @@ function isValidModelId(modelId: string, provider: LLMProvider): boolean {
       return (ANTHROPIC_MODEL_IDS as ReadonlyArray<string>).includes(modelId);
     case "google":
       return (GOOGLE_MODEL_IDS as ReadonlyArray<string>).includes(modelId);
+    case "deepseek":
+      return (DEEPSEEK_MODEL_IDS as ReadonlyArray<string>).includes(modelId);
   }
 }
 
@@ -92,6 +110,8 @@ function getAllModelIds(provider: LLMProvider): ReadonlyArray<string> {
       return ANTHROPIC_MODEL_IDS;
     case "google":
       return GOOGLE_MODEL_IDS;
+    case "deepseek":
+      return DEEPSEEK_MODEL_IDS;
   }
 }
 
@@ -110,6 +130,10 @@ function modelSupportsVision(
     }
     case "google": {
       const model = GOOGLE_MODELS.find((m) => m.id === modelId);
+      return model ? model.supportsVision : false;
+    }
+    case "deepseek": {
+      const model = DEEPSEEK_MODELS.find((m) => m.id === modelId);
       return model ? model.supportsVision : false;
     }
   }

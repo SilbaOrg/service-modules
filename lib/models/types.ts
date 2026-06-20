@@ -1,4 +1,4 @@
-type LLMProvider = "openai" | "anthropic" | "google";
+type LLMProvider = "openai" | "anthropic" | "google" | "deepseek";
 
 interface AnthropicPricing {
   readonly inputBase: number;
@@ -24,6 +24,12 @@ interface GooglePricing {
   readonly batchOutput: number;
 }
 
+interface DeepSeekPricing {
+  readonly inputCacheHit: number;
+  readonly inputCacheMiss: number;
+  readonly output: number;
+}
+
 interface AnthropicModelEntry {
   readonly id: string;
   readonly displayName: string;
@@ -45,6 +51,13 @@ interface GoogleModelEntry {
   readonly pricing: GooglePricing;
 }
 
+interface DeepSeekModelEntry {
+  readonly id: string;
+  readonly displayName: string;
+  readonly supportsVision: boolean;
+  readonly pricing: DeepSeekPricing;
+}
+
 interface ModelConfig {
   readonly id: string;
   readonly displayName: string;
@@ -54,6 +67,8 @@ interface ModelConfig {
 export type {
   AnthropicModelEntry,
   AnthropicPricing,
+  DeepSeekModelEntry,
+  DeepSeekPricing,
   GoogleModelEntry,
   GooglePricing,
   LLMProvider,

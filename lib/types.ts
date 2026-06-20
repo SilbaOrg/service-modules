@@ -279,6 +279,11 @@ interface GoogleUsage {
   batch_mode?: boolean;
 }
 
+type DeepSeekUsage = GenericUsage & {
+  cache_hit_tokens?: number;
+  reasoning_tokens?: number;
+};
+
 type HealthStatus = "healthy" | "unhealthy" | "degraded";
 
 interface EnhancedHealthResponse {
@@ -301,6 +306,7 @@ export type {
   CompanyInformation,
   CorsConfig,
   CostDetails,
+  DeepSeekUsage,
   EnhancedHealthResponse,
   FlatLogMetadata,
   GenericUsage,

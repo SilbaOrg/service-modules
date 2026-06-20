@@ -16,16 +16,24 @@ const GOOGLE_MODEL_ID = {
   GEMINI_3_FLASH_PREVIEW: "gemini-3-flash-preview",
 } as const;
 
+const DEEPSEEK_MODEL_ID = {
+  V4_FLASH: "deepseek-v4-flash",
+  V4_PRO: "deepseek-v4-pro",
+} as const;
+
 type OpenAIModelIdValue =
   typeof OPENAI_MODEL_ID[keyof typeof OPENAI_MODEL_ID];
 type AnthropicModelIdValue =
   typeof ANTHROPIC_MODEL_ID[keyof typeof ANTHROPIC_MODEL_ID];
 type GoogleModelIdValue =
   typeof GOOGLE_MODEL_ID[keyof typeof GOOGLE_MODEL_ID];
+type DeepSeekModelIdValue =
+  typeof DEEPSEEK_MODEL_ID[keyof typeof DEEPSEEK_MODEL_ID];
 
-export { ANTHROPIC_MODEL_ID, GOOGLE_MODEL_ID, OPENAI_MODEL_ID };
+export { ANTHROPIC_MODEL_ID, DEEPSEEK_MODEL_ID, GOOGLE_MODEL_ID, OPENAI_MODEL_ID };
 export type {
   AnthropicModelIdValue,
+  DeepSeekModelIdValue,
   GoogleModelIdValue,
   OpenAIModelIdValue,
 };
