@@ -3,10 +3,11 @@
   "specifiers": {
     "jsr:@std/fs@^1.0.24": "1.0.24",
     "jsr:@std/internal@^1.0.14": "1.0.14",
-    "jsr:@std/path@^1.1.5": "1.1.5",
+    "jsr:@std/path@^1.1.5": "1.1.6",
+    "jsr:@std/path@^1.1.6": "1.1.6",
     "npm:@types/node@*": "24.2.0",
     "npm:langfuse@^3.38.20": "3.38.20",
-    "npm:nanoid@^5.1.15": "5.1.15",
+    "npm:nanoid@6": "6.0.0",
     "npm:tiktoken@^1.0.22": "1.0.22"
   },
   "jsr": {
@@ -14,7 +15,7 @@
       "integrity": "f3061b45b81673a2bece689da041df32d174be064c89eb6397fb5718d3fb7877",
       "dependencies": [
         "jsr:@std/internal",
-        "jsr:@std/path"
+        "jsr:@std/path@^1.1.5"
       ]
     },
     "@std/internal@1.0.10": {
@@ -23,8 +24,8 @@
     "@std/internal@1.0.14": {
       "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
     },
-    "@std/path@1.1.5": {
-      "integrity": "ccea00982ea28c36becaf6e62f855406c76a8c32d462f66f415bbb7d83a271bc",
+    "@std/path@1.1.6": {
+      "integrity": "c68485c2a4dfbb5ae3cc74fae4e8c4e5d874cf8a8ed12927917235c758b46cbe",
       "dependencies": [
         "jsr:@std/internal"
       ]
@@ -53,8 +54,8 @@
       "integrity": "sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==",
       "bin": true
     },
-    "nanoid@5.1.15": {
-      "integrity": "sha512-kBg3RpGtIe+RpTbyXwoI6pk5yD7KUiI3sygUqgeBMRst42KmhB4RZC7eiO9Wa1HIpaCCtpE2DJ6OI4Wi5ebwFw==",
+    "nanoid@6.0.0": {
+      "integrity": "sha512-mkUH+rPkwU2qPadJ0oJZOjeZ5Mxn8Q1UhevwkTRWNuUZzyia3h4rhzK39hxaHTk0o2OxB8W2SQ6A8k23ZDi1pQ==",
       "bin": true
     },
     "tiktoken@1.0.22": {
@@ -67,9 +68,9 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/fs@^1.0.24",
-      "jsr:@std/path@^1.1.5",
+      "jsr:@std/path@^1.1.6",
       "npm:langfuse@^3.38.20",
-      "npm:nanoid@^5.1.15",
+      "npm:nanoid@6",
       "npm:tiktoken@^1.0.22"
     ]
   }
