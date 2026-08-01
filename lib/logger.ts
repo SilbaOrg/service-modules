@@ -1,17 +1,17 @@
 /**
  * Logging system implementation for Silba microservices
- * 
+ *
  * This module provides standardized logging that integrates with Loki/Grafana.
- * 
+ *
  * Environment variables:
  * - LOG_LEVEL: Sets minimum log level (ERROR, WARN, INFO, DEBUG, TRACE)
  * - LOG_FORMAT: Sets output format ("json" or "text")
- * 
+ *
  * IMPORTANT: For Loki/Grafana integration:
  * - Always use flat key-value pairs in metadata (avoid nested objects)
  * - Use consistent field names across services (error_type, error_id, trace_id, etc.)
  * - Keep metadata values as strings or numbers for best compatibility
- * 
+ *
  * @example Good logging practice:
  * ```typescript
  * logger.error("Payment failed", {
@@ -22,7 +22,7 @@
  *   gateway: "stripe"
  * });
  * ```
- * 
+ *
  * @example Bad logging practice (avoid nested objects):
  * ```typescript
  * // DON'T DO THIS - Loki cannot parse nested objects well
@@ -35,11 +35,17 @@
  * ```
  */
 
-import { type LogEntry, type LoggerConfig, type FlatLogMetadata, LogLevel, validateFlatMetadata } from "./types.ts";
+import {
+  type FlatLogMetadata,
+  type LogEntry,
+  type LoggerConfig,
+  LogLevel,
+  validateFlatMetadata,
+} from "./types.ts";
 
 function createLogger(
   serviceName: string,
-  options: Partial<LoggerConfig> = {}
+  options: Partial<LoggerConfig> = {},
 ) {
   const envLogLevel = parseLogLevel(Deno.env.get("LOG_LEVEL"));
   const envLogFormat = Deno.env.get("LOG_FORMAT") as
@@ -47,10 +53,9 @@ function createLogger(
     | "text"
     | undefined;
 
-  const minLevel =
-    envLogLevel !== undefined
-      ? envLogLevel
-      : options.minLevel ?? LogLevel.INFO;
+  const minLevel = envLogLevel !== undefined
+    ? envLogLevel
+    : options.minLevel ?? LogLevel.INFO;
 
   const format = envLogFormat ?? options.format ?? "json";
 
@@ -61,7 +66,7 @@ function createLogger(
   function log(
     level: LogLevel,
     message: string,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ): void {
     if (level > config.minLevel) {
       return;
@@ -97,14 +102,14 @@ function createLogger(
       log(LogLevel.DEBUG, message, metadata),
     trace: (message: string, metadata?: FlatLogMetadata) =>
       log(LogLevel.TRACE, message, metadata),
-      
+
     /**
      * Log an error with structured context for better Loki/Grafana filtering
      * @param message - Human-readable error message
      * @param errorType - Category of error (e.g., "VALIDATION", "DATABASE", "API_EXTERNAL")
      * @param errorId - Unique identifier for this error type (e.g., "DB_CONNECTION_FAILED")
      * @param context - Additional flat key-value pairs (avoid nested objects)
-     * 
+     *
      * @example
      * logger.errorWithContext(
      *   "Failed to process payment",
@@ -117,7 +122,7 @@ function createLogger(
       message: string,
       errorType: string,
       errorId: string,
-      context: Record<string, string | number | boolean> = {}
+      context: Record<string, string | number | boolean> = {},
     ) => {
       log(LogLevel.ERROR, message, {
         error_type: errorType,
@@ -125,13 +130,13 @@ function createLogger(
         ...context,
       });
     },
-    
+
     /**
      * Log a request with trace ID for correlation across services
      * @param message - Log message
      * @param traceId - Unique trace ID for the request
      * @param metadata - Additional flat key-value pairs
-     * 
+     *
      * @example
      * logger.infoWithTrace("Processing user request", "abc-123-def", {
      *   path: "/api/v1/users",
@@ -141,14 +146,14 @@ function createLogger(
     infoWithTrace: (
       message: string,
       traceId: string,
-      metadata: FlatLogMetadata = {}
+      metadata: FlatLogMetadata = {},
     ) => {
       log(LogLevel.INFO, message, {
         trace_id: traceId,
         ...metadata,
       });
     },
-    
+
     /**
      * Log API response details for monitoring
      * @param path - API endpoint path
@@ -156,7 +161,7 @@ function createLogger(
      * @param status - HTTP status code
      * @param responseTime - Response time in milliseconds
      * @param metadata - Additional context
-     * 
+     *
      * @example
      * logger.apiResponse("/api/v1/users", "GET", 200, 45, { user_count: 10 });
      */
@@ -165,12 +170,14 @@ function createLogger(
       method: string,
       status: number,
       responseTime: number,
-      metadata: FlatLogMetadata = {}
+      metadata: FlatLogMetadata = {},
     ) => {
-      const level = status >= 500 ? LogLevel.ERROR : 
-                   status >= 400 ? LogLevel.WARN : 
-                   LogLevel.INFO;
-      
+      const level = status >= 500
+        ? LogLevel.ERROR
+        : status >= 400
+        ? LogLevel.WARN
+        : LogLevel.INFO;
+
       log(level, `${method} ${path} ${status}`, {
         path,
         method,
@@ -179,7 +186,7 @@ function createLogger(
         ...metadata,
       });
     },
-    
+
     // Create a child logger with the same service name but different module
     child: (module: string) =>
       createLogger(config.serviceName, { ...options, module }),
@@ -241,10 +248,9 @@ function convertToGelf(entry: LogEntry): Record<string, unknown> {
   const unixTimestamp = new Date(timestamp).getTime() / 1000;
 
   // Determine numeric log level
-  const numericLevel =
-    typeof level === "string"
-      ? logLevelToGelfLevel(LogLevel[level as keyof typeof LogLevel])
-      : logLevelToGelfLevel(level);
+  const numericLevel = typeof level === "string"
+    ? logLevelToGelfLevel(LogLevel[level as keyof typeof LogLevel])
+    : logLevelToGelfLevel(level);
 
   // Build GELF message with required fields
   const gelfMessage: Record<string, unknown> = {
@@ -254,7 +260,7 @@ function convertToGelf(entry: LogEntry): Record<string, unknown> {
     timestamp: unixTimestamp,
     level: numericLevel,
     _level_name: typeof level === "string" ? level : LogLevel[level],
-    _service: service,  // Add service as custom field (host gets overwritten by seq-input-gelf)
+    _service: service, // Add service as custom field (host gets overwritten by seq-input-gelf)
   };
 
   // Add optional module
@@ -286,11 +292,32 @@ function convertToGelf(entry: LogEntry): Record<string, unknown> {
   return gelfMessage;
 }
 
+/**
+ * Which stream a line goes to decides its severity once it leaves the container.
+ *
+ * Logs reach Seq through Docker's `gelf` log driver, which takes the level from
+ * the STREAM — stdout becomes 6 (Information), stderr becomes 3 (Error) — and
+ * treats the payload as opaque text. The `level` we set in convertToGelf below
+ * is therefore never read by anything downstream.
+ *
+ * Sending everything to stdout filed every ERROR in every service as
+ * Information. On 2026-08-01 `@Level = 'err'` matched zero events for services
+ * that had just spent ten minutes failing, so errors were findable only by
+ * full-text search and error-based alerting could never fire.
+ */
+function writeLine(level: string, line: string): void {
+  if (level === "ERROR" || level === "WARN") {
+    console.error(line);
+    return;
+  }
+  console.log(line);
+}
+
 function outputLog(entry: LogEntry, format: "json" | "text"): void {
   if (format === "json") {
     // Output GELF format for Seq ingestion via Docker GELF driver + seq-input-gelf
     const gelfMessage = convertToGelf(entry);
-    console.log(JSON.stringify(gelfMessage));
+    writeLine(entry.level, JSON.stringify(gelfMessage));
   } else {
     const level = entry.level.padEnd(5);
     const module = entry.module ? `[${entry.module}]` : "";
@@ -312,8 +339,9 @@ function outputLog(entry: LogEntry, format: "json" | "text"): void {
       metadata = ` ${JSON.stringify(rest)}`;
     }
 
-    console.log(
-      `${timestamp} ${level} ${service}${module} ${requestId}: ${message}${metadata}`
+    writeLine(
+      entry.level,
+      `${timestamp} ${level} ${service}${module} ${requestId}: ${message}${metadata}`,
     );
   }
 }
