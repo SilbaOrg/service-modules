@@ -7,7 +7,7 @@
     "jsr:@std/path@^1.1.6": "1.1.6",
     "npm:@types/node@*": "24.2.0",
     "npm:langfuse@^3.38.20": "3.38.20",
-    "npm:nanoid@6": "6.0.0",
+    "npm:nanoid@^6.0.1": "6.0.1",
     "npm:tiktoken@^1.0.22": "1.0.22"
   },
   "jsr": {
@@ -54,8 +54,8 @@
       "integrity": "sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==",
       "bin": true
     },
-    "nanoid@6.0.0": {
-      "integrity": "sha512-mkUH+rPkwU2qPadJ0oJZOjeZ5Mxn8Q1UhevwkTRWNuUZzyia3h4rhzK39hxaHTk0o2OxB8W2SQ6A8k23ZDi1pQ==",
+    "nanoid@6.0.1": {
+      "integrity": "sha512-3wVS3i51pE2pi1k5FFL/95BGfVS0kSsvDVuGXHOtxox/TywUmtgq+3qiTOTbs9J7KfHaXPiN171k/A6dBnaXFw==",
       "bin": true
     },
     "tiktoken@1.0.22": {
@@ -70,7 +70,7 @@
       "jsr:@std/fs@^1.0.24",
       "jsr:@std/path@^1.1.6",
       "npm:langfuse@^3.38.20",
-      "npm:nanoid@6",
+      "npm:nanoid@^6.0.1",
       "npm:tiktoken@^1.0.22"
     ]
   }
