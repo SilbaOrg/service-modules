@@ -58,7 +58,7 @@ function validateFlatMetadata(metadata: Record<string, unknown>): void {
         `Nested ${valueType} not allowed in log metadata. ` +
           `Found nested ${valueType} at key '${key}'. ` +
           `Use flat keys instead (e.g., '${key}_id', '${key}_name'). ` +
-          `This is required for proper Loki/Grafana integration.`
+          `This is required for proper Loki/Grafana integration.`,
       );
     }
   });
@@ -71,8 +71,8 @@ interface CorsConfig {
     | RegExp
     | (string | RegExp)[]
     | ((ctx: {
-        request: { headers: { get: (key: string) => string | null } };
-      }) => string);
+      request: { headers: { get: (key: string) => string | null } };
+    }) => string);
   methods?: string[];
   allowedHeaders?: string[];
   exposedHeaders?: string[];
@@ -235,12 +235,12 @@ interface OpenAIResponsesRequest {
   input:
     | string
     | Array<{
-        role: "developer" | "user" | "assistant";
-        content: Array<{
-          type: "input_text";
-          text: string;
-        }>;
+      role: "developer" | "user" | "assistant";
+      content: Array<{
+        type: "input_text";
+        text: string;
       }>;
+    }>;
   tools?: OpenAITool[];
   stream?: boolean;
   reasoning?: {
@@ -277,6 +277,8 @@ interface GoogleUsage {
   completion_tokens: number;
   cached_tokens?: number;
   batch_mode?: boolean;
+  /** Grounding-with-Google-Search requests made by this call. */
+  web_search_queries?: number;
 }
 
 type DeepSeekUsage = GenericUsage & {
@@ -326,7 +328,4 @@ export type {
   UserPrompt,
 };
 
-export {
-  LogLevel,
-  validateFlatMetadata,
-};
+export { LogLevel, validateFlatMetadata };

@@ -1,12 +1,16 @@
 export type {
   AnthropicModelEntry,
   AnthropicPricing,
+  DeepSeekModelEntry,
+  DeepSeekPricing,
+  DeepSeekTierPricing,
   GoogleModelEntry,
   GooglePricing,
   LLMProvider,
   ModelConfig,
   OpenAIModelEntry,
   OpenAIPricing,
+  OpenAITierPricing,
 } from "./types.ts";
 
 export {
@@ -33,22 +37,23 @@ export type { AnthropicModelId } from "./anthropic.ts";
 
 export {
   findOpenAIModel,
+  OPENAI_LONG_CONTEXT_THRESHOLD_TOKENS,
   OPENAI_MODEL_IDS,
   OPENAI_MODELS,
+  selectOpenAITier,
 } from "./openai.ts";
 export type { OpenAIModelId } from "./openai.ts";
 
-export {
-  findGoogleModel,
-  GOOGLE_MODEL_IDS,
-  GOOGLE_MODELS,
-} from "./google.ts";
+export { findGoogleModel, GOOGLE_MODEL_IDS, GOOGLE_MODELS } from "./google.ts";
 export type { GoogleModelId } from "./google.ts";
 
 export {
   DEEPSEEK_MODEL_IDS,
   DEEPSEEK_MODELS,
+  DEEPSEEK_PEAK_WINDOWS_UTC,
   findDeepSeekModel,
+  isDeepSeekPeakHour,
+  selectDeepSeekTier,
 } from "./deepseek.ts";
 export type { DeepSeekModelId } from "./deepseek.ts";
 

@@ -1,5 +1,5 @@
 import type { CostDetails, OpenAIUsage } from "../types.ts";
-import { findOpenAIModel } from "../models/openai.ts";
+import { findOpenAIModel, selectOpenAITier } from "../models/openai.ts";
 
 function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
   if (!model) {
@@ -18,7 +18,7 @@ function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
   }
 
   const modelEntry = findOpenAIModel(model);
-  const { pricing } = modelEntry;
+  const pricing = selectOpenAITier(modelEntry, usage.prompt_tokens);
 
   const promptTokensInMillions = usage.prompt_tokens / 1_000_000;
   const completionTokensInMillions = usage.completion_tokens / 1_000_000;
@@ -27,8 +27,8 @@ function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
   let inputCost = 0;
 
   if (cachedTokensInMillions > 0) {
-    const nonCachedTokensInMillions =
-      promptTokensInMillions - cachedTokensInMillions;
+    const nonCachedTokensInMillions = promptTokensInMillions -
+      cachedTokensInMillions;
     inputCost = nonCachedTokensInMillions * pricing.input +
       cachedTokensInMillions * pricing.cached;
   } else {
@@ -43,9 +43,13 @@ function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
     webSearchTokenCost = webSearchTokensInMillions * pricing.input;
   }
 
+  // $10 per 1,000 calls on reasoning models, which every model in the registry
+  // is. Non-reasoning models bill $25 per 1,000 but do not charge for the
+  // search-result tokens; none are registered here.
+  // Source: developers.openai.com/api/docs/pricing, read 2026-08-22.
   let webSearchQueryCost = 0;
   if (usage.web_search_queries) {
-    webSearchQueryCost = (usage.web_search_queries / 1000) * 30.0;
+    webSearchQueryCost = (usage.web_search_queries / 1000) * 10.0;
   }
 
   const totalCost = inputCost + outputCost + webSearchTokenCost +
@@ -59,13 +63,20 @@ function calculateOpenAICost(model: string, usage: OpenAIUsage): CostDetails {
     webSearchQueryCost: Math.round(webSearchQueryCost * 1000000) / 1000000,
   };
 
-  if (typeof result.input !== "number" || isNaN(result.input) || result.input < 0) {
+  if (
+    typeof result.input !== "number" || isNaN(result.input) || result.input < 0
+  ) {
     throw new Error(`Invalid calculated input cost: ${result.input}`);
   }
-  if (typeof result.output !== "number" || isNaN(result.output) || result.output < 0) {
+  if (
+    typeof result.output !== "number" || isNaN(result.output) ||
+    result.output < 0
+  ) {
     throw new Error(`Invalid calculated output cost: ${result.output}`);
   }
-  if (typeof result.total !== "number" || isNaN(result.total) || result.total < 0) {
+  if (
+    typeof result.total !== "number" || isNaN(result.total) || result.total < 0
+  ) {
     throw new Error(`Invalid calculated total cost: ${result.total}`);
   }
 

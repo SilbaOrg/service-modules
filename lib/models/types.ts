@@ -10,10 +10,19 @@ interface AnthropicPricing {
   readonly batchOutput: number;
 }
 
-interface OpenAIPricing {
+interface OpenAITierPricing {
   readonly input: number;
   readonly output: number;
   readonly cached: number;
+}
+
+/**
+ * Above OPENAI_LONG_CONTEXT_THRESHOLD_TOKENS prompt tokens the ENTIRE request
+ * reprices at the longContext tier, not just the tokens past the threshold.
+ */
+interface OpenAIPricing {
+  readonly standard: OpenAITierPricing;
+  readonly longContext: OpenAITierPricing;
 }
 
 interface GooglePricing {
@@ -24,10 +33,20 @@ interface GooglePricing {
   readonly batchOutput: number;
 }
 
-interface DeepSeekPricing {
+interface DeepSeekTierPricing {
   readonly inputCacheHit: number;
   readonly inputCacheMiss: number;
   readonly output: number;
+}
+
+/**
+ * DeepSeek bills at two rates depending on the hour the request is served.
+ * Off-peak is exactly half of peak. Both tiers are stored so a caller can
+ * report the rate actually charged rather than a single approximation.
+ */
+interface DeepSeekPricing {
+  readonly peak: DeepSeekTierPricing;
+  readonly offPeak: DeepSeekTierPricing;
 }
 
 interface AnthropicModelEntry {
@@ -69,10 +88,12 @@ export type {
   AnthropicPricing,
   DeepSeekModelEntry,
   DeepSeekPricing,
+  DeepSeekTierPricing,
   GoogleModelEntry,
   GooglePricing,
   LLMProvider,
   ModelConfig,
   OpenAIModelEntry,
   OpenAIPricing,
+  OpenAITierPricing,
 };

@@ -1,9 +1,14 @@
 import type { CostDetails, DeepSeekUsage } from "../types.ts";
-import { findDeepSeekModel } from "../models/deepseek.ts";
+import { findDeepSeekModel, selectDeepSeekTier } from "../models/deepseek.ts";
 
+/**
+ * `servedAt` selects DeepSeek's peak or off-peak tier. Omit it and the peak
+ * (higher) tier is used, so an unknown serve time never under-reports cost.
+ */
 function calculateDeepSeekCost(
   model: string,
   usage: DeepSeekUsage,
+  servedAt?: Date,
 ): CostDetails {
   if (!model) {
     throw new Error("Model is required for cost calculation");
@@ -21,7 +26,7 @@ function calculateDeepSeekCost(
   }
 
   const modelEntry = findDeepSeekModel(model);
-  const { pricing } = modelEntry;
+  const pricing = selectDeepSeekTier(modelEntry, servedAt);
 
   const cacheHitTokens = usage.cache_hit_tokens ?? 0;
   if (cacheHitTokens < 0 || cacheHitTokens > usage.prompt_tokens) {

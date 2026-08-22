@@ -30,8 +30,8 @@ function calculateGoogleCost(model: string, usage: GoogleUsage): CostDetails {
   if (usage.batch_mode && pricing.batchInput !== undefined) {
     inputCost = inputTokensInMillions * pricing.batchInput;
   } else if (cachedTokensInMillions > 0) {
-    const nonCachedTokensInMillions =
-      inputTokensInMillions - cachedTokensInMillions;
+    const nonCachedTokensInMillions = inputTokensInMillions -
+      cachedTokensInMillions;
     inputCost = nonCachedTokensInMillions * pricing.input +
       cachedTokensInMillions * pricing.cacheRead;
   } else {
@@ -44,21 +44,38 @@ function calculateGoogleCost(model: string, usage: GoogleUsage): CostDetails {
     outputCost = outputTokensInMillions * pricing.output;
   }
 
-  const totalCost = inputCost + outputCost;
+  // Grounding with Google Search: $14 per 1,000 requests on Gemini 3.x.
+  // The 5,000-free-per-month allowance is account-level state this function
+  // cannot see, so it is NOT netted off — cost is over-reported by up to
+  // $70/month rather than silently under-reported.
+  // Source: ai.google.dev/gemini-api/docs/pricing, read 2026-08-22.
+  const webSearchQueries = usage.web_search_queries ?? 0;
+  const webSearchQueryCost = (webSearchQueries / 1000) * 14.0;
+
+  const totalCost = inputCost + outputCost + webSearchQueryCost;
 
   const result = {
     input: Math.round(inputCost * 1000000) / 1000000,
     output: Math.round(outputCost * 1000000) / 1000000,
     total: Math.round(totalCost * 1000000) / 1000000,
+    webSearchQueries,
+    webSearchQueryCost: Math.round(webSearchQueryCost * 1000000) / 1000000,
   };
 
-  if (typeof result.input !== "number" || isNaN(result.input) || result.input < 0) {
+  if (
+    typeof result.input !== "number" || isNaN(result.input) || result.input < 0
+  ) {
     throw new Error(`Invalid calculated input cost: ${result.input}`);
   }
-  if (typeof result.output !== "number" || isNaN(result.output) || result.output < 0) {
+  if (
+    typeof result.output !== "number" || isNaN(result.output) ||
+    result.output < 0
+  ) {
     throw new Error(`Invalid calculated output cost: ${result.output}`);
   }
-  if (typeof result.total !== "number" || isNaN(result.total) || result.total < 0) {
+  if (
+    typeof result.total !== "number" || isNaN(result.total) || result.total < 0
+  ) {
     throw new Error(`Invalid calculated total cost: ${result.total}`);
   }
 
