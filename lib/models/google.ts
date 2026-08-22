@@ -4,6 +4,8 @@ import { GOOGLE_MODEL_ID } from "./ids.ts";
 const GOOGLE_MODEL_IDS = [
   GOOGLE_MODEL_ID.GEMINI_3_1_PRO_PREVIEW,
   GOOGLE_MODEL_ID.GEMINI_3_FLASH_PREVIEW,
+  GOOGLE_MODEL_ID.GEMINI_3_5_FLASH_LITE,
+  GOOGLE_MODEL_ID.GEMINI_3_7_FLASH,
 ] as const;
 
 type GoogleModelId = typeof GOOGLE_MODEL_IDS[number];
@@ -31,6 +33,30 @@ const GOOGLE_MODELS: ReadonlyArray<GoogleModelEntry> = [
       cacheRead: 0.05,
       batchInput: 0.25,
       batchOutput: 1.5,
+    },
+  },
+  {
+    id: GOOGLE_MODEL_ID.GEMINI_3_5_FLASH_LITE,
+    displayName: "Gemini 3.5 Flash-Lite",
+    supportsVision: true,
+    pricing: {
+      input: 0.30,
+      output: 2.50,
+      cacheRead: 0.03,
+      batchInput: 0.15,
+      batchOutput: 1.25,
+    },
+  },
+  {
+    id: GOOGLE_MODEL_ID.GEMINI_3_7_FLASH,
+    displayName: "Gemini 3.7 Flash",
+    supportsVision: true,
+    pricing: {
+      input: 0.75,
+      output: 3.75,
+      cacheRead: 0.075,
+      batchInput: 0.375,
+      batchOutput: 1.875,
     },
   },
 ];
