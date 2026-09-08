@@ -9,6 +9,7 @@ import { OPENAI_MODEL_ID } from "./ids.ts";
 const OPENAI_LONG_CONTEXT_THRESHOLD_TOKENS = 272_000;
 
 const OPENAI_MODEL_IDS = [
+  OPENAI_MODEL_ID.GPT_6_ASTRA,
   OPENAI_MODEL_ID.GPT_5_6_SOL,
   OPENAI_MODEL_ID.GPT_5_6_TERRA,
   OPENAI_MODEL_ID.GPT_5_6_LUNA,
@@ -17,6 +18,17 @@ const OPENAI_MODEL_IDS = [
 type OpenAIModelId = typeof OPENAI_MODEL_IDS[number];
 
 const OPENAI_MODELS: ReadonlyArray<OpenAIModelEntry> = [
+  {
+    // Flagship. No promotional pricing and no stated end date, unlike Sol.
+    // Effort ladder omits "none": low | medium | high | xhigh | max.
+    id: OPENAI_MODEL_ID.GPT_6_ASTRA,
+    displayName: "GPT-6 Astra",
+    supportsVision: true,
+    pricing: {
+      standard: { input: 10.0, output: 50.0, cached: 1.0 },
+      longContext: { input: 20.0, output: 75.0, cached: 2.0 },
+    },
+  },
   {
     // Promotional pricing, stated as running at least through 2026-11-21.
     // OpenAI publishes no reversion figure; re-check the pricing page then.
