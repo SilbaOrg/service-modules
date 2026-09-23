@@ -10,6 +10,8 @@ const OPENAI_LONG_CONTEXT_THRESHOLD_TOKENS = 272_000;
 
 const OPENAI_MODEL_IDS = [
   OPENAI_MODEL_ID.GPT_6_ASTRA,
+  OPENAI_MODEL_ID.GPT_6_SOL,
+  OPENAI_MODEL_ID.GPT_6_LUNA,
   OPENAI_MODEL_ID.GPT_5_6_SOL,
   OPENAI_MODEL_ID.GPT_5_6_TERRA,
   OPENAI_MODEL_ID.GPT_5_6_LUNA,
@@ -27,6 +29,29 @@ const OPENAI_MODELS: ReadonlyArray<OpenAIModelEntry> = [
     pricing: {
       standard: { input: 10.0, output: 50.0, cached: 1.0 },
       longContext: { input: 20.0, output: 75.0, cached: 2.0 },
+    },
+  },
+  {
+    // Source: developers.openai.com/api/docs/pricing, read 2026-09-23.
+    id: OPENAI_MODEL_ID.GPT_6_SOL,
+    displayName: "GPT-6 Sol",
+    supportsVision: true,
+    pricing: {
+      standard: { input: 2.0, output: 10.0, cached: 0.2 },
+      longContext: { input: 4.0, output: 15.0, cached: 0.4 },
+    },
+  },
+  {
+    // Cheapest 6-series model and the one image transcription runs on.
+    // Vision is declared by the model page's "Image input" feature, not
+    // inferred from the family.
+    // Source: developers.openai.com/api/docs/pricing, read 2026-09-23.
+    id: OPENAI_MODEL_ID.GPT_6_LUNA,
+    displayName: "GPT-6 Luna",
+    supportsVision: true,
+    pricing: {
+      standard: { input: 0.1, output: 0.5, cached: 0.01 },
+      longContext: { input: 0.2, output: 0.75, cached: 0.02 },
     },
   },
   {
