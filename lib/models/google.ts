@@ -1,8 +1,13 @@
-import type { GoogleModelEntry } from "./types.ts";
+import type {
+  GoogleModelEntry,
+  GooglePriceStep,
+  GooglePricing,
+} from "./types.ts";
 import { GOOGLE_MODEL_ID } from "./ids.ts";
 
 const GOOGLE_MODEL_IDS = [
-  GOOGLE_MODEL_ID.GEMINI_3_7_FLASH,
+  GOOGLE_MODEL_ID.GEMINI_4_ARGON,
+  GOOGLE_MODEL_ID.GEMINI_3_8_FLASH,
   GOOGLE_MODEL_ID.GEMINI_3_5_FLASH_LITE,
 ] as const;
 
@@ -10,9 +15,32 @@ type GoogleModelId = typeof GOOGLE_MODEL_IDS[number];
 
 const GOOGLE_MODELS: ReadonlyArray<GoogleModelEntry> = [
   {
-    // Introductory pricing. Doubles to 1.50 / 7.50 on 2027-01-01.
-    id: GOOGLE_MODEL_ID.GEMINI_3_7_FLASH,
-    displayName: "Gemini 3.7 Flash",
+    id: GOOGLE_MODEL_ID.GEMINI_4_ARGON,
+    displayName: "Gemini 4 Argon",
+    supportsVision: true,
+    pricing: {
+      input: 2.0,
+      output: 10.0,
+      cacheRead: 0.1,
+      batchInput: 1.0,
+      batchOutput: 5.0,
+    },
+    scheduledPricing: [
+      {
+        effectiveFromUtcMs: Date.UTC(2026, 11, 1),
+        pricing: {
+          input: 4.0,
+          output: 20.0,
+          cacheRead: 0.2,
+          batchInput: 2.0,
+          batchOutput: 10.0,
+        },
+      },
+    ],
+  },
+  {
+    id: GOOGLE_MODEL_ID.GEMINI_3_8_FLASH,
+    displayName: "Gemini 3.8 Flash",
     supportsVision: true,
     pricing: {
       input: 0.75,
@@ -21,6 +49,18 @@ const GOOGLE_MODELS: ReadonlyArray<GoogleModelEntry> = [
       batchInput: 0.375,
       batchOutput: 1.875,
     },
+    scheduledPricing: [
+      {
+        effectiveFromUtcMs: Date.UTC(2027, 0, 1),
+        pricing: {
+          input: 1.5,
+          output: 7.5,
+          cacheRead: 0.15,
+          batchInput: 0.75,
+          batchOutput: 3.75,
+        },
+      },
+    ],
   },
   {
     id: GOOGLE_MODEL_ID.GEMINI_3_5_FLASH_LITE,
@@ -33,6 +73,7 @@ const GOOGLE_MODELS: ReadonlyArray<GoogleModelEntry> = [
       batchInput: 0.15,
       batchOutput: 1.25,
     },
+    scheduledPricing: [],
   },
 ];
 
@@ -48,6 +89,38 @@ function findGoogleModel(modelName: string): GoogleModelEntry {
   return model;
 }
 
-export { findGoogleModel, GOOGLE_MODEL_IDS, GOOGLE_MODELS };
+function laterStep(a: GooglePriceStep, b: GooglePriceStep): GooglePriceStep {
+  return b.effectiveFromUtcMs > a.effectiveFromUtcMs ? b : a;
+}
+
+function dearerPricing(a: GooglePricing, b: GooglePricing): GooglePricing {
+  return b.input > a.input ? b : a;
+}
+
+function stepPricing({ pricing }: GooglePriceStep): GooglePricing {
+  return pricing;
+}
+
+function selectGooglePricing(
+  { pricing, scheduledPricing }: GoogleModelEntry,
+  at?: Date,
+): GooglePricing {
+  if (at === undefined) {
+    return scheduledPricing.map(stepPricing).reduce(dearerPricing, pricing);
+  }
+  const atMs = at.getTime();
+  const reached = scheduledPricing.filter((step) =>
+    step.effectiveFromUtcMs <= atMs
+  );
+  const [first, ...rest] = reached;
+  return first === undefined ? pricing : rest.reduce(laterStep, first).pricing;
+}
+
+export {
+  findGoogleModel,
+  GOOGLE_MODEL_IDS,
+  GOOGLE_MODELS,
+  selectGooglePricing,
+};
 
 export type { GoogleModelId };

@@ -2,11 +2,12 @@ import type { AnthropicUsage } from "../types.ts";
 import {
   findAnthropicModel,
   resolveAnthropicModelName,
+  selectAnthropicRates,
 } from "../models/anthropic.ts";
-import type { AnthropicPricing } from "../models/types.ts";
+import type { AnthropicRates } from "../models/types.ts";
 
 function calculateInputCost(
-  pricing: AnthropicPricing,
+  pricing: AnthropicRates,
   usage: AnthropicUsage,
 ): number {
   const inputTokensInMillions = usage.input_tokens / 1_000_000;
@@ -37,7 +38,7 @@ function calculateInputCost(
 }
 
 function calculateOutputCost(
-  pricing: AnthropicPricing,
+  pricing: AnthropicRates,
   usage: AnthropicUsage,
 ): number {
   const outputTokensInMillions = usage.output_tokens / 1_000_000;
@@ -72,7 +73,10 @@ function calculateAnthropicCost(
 
   const resolvedName = resolveAnthropicModelName(modelName);
   const modelEntry = findAnthropicModel(resolvedName);
-  const { pricing } = modelEntry;
+  const pricing = selectAnthropicRates(
+    modelEntry.pricing,
+    usage.input_tokens,
+  );
 
   const input = calculateInputCost(pricing, usage);
   const output = calculateOutputCost(pricing, usage);

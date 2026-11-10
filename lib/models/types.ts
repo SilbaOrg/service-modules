@@ -1,6 +1,6 @@
 type LLMProvider = "openai" | "anthropic" | "google" | "deepseek";
 
-interface AnthropicPricing {
+interface AnthropicRates {
   readonly inputBase: number;
   readonly cacheWrite5m: number;
   readonly cacheWrite1h: number;
@@ -9,6 +9,28 @@ interface AnthropicPricing {
   readonly batchInput: number;
   readonly batchOutput: number;
 }
+
+interface AnthropicFlatPricing {
+  readonly kind: "flat";
+  readonly rates: AnthropicRates;
+}
+
+interface AnthropicPromptLengthPricing {
+  readonly kind: "byPromptLength";
+  readonly thresholdTokens: number;
+  readonly upToThreshold: AnthropicRates;
+  readonly overThreshold: AnthropicRates;
+}
+
+type AnthropicPricing = AnthropicFlatPricing | AnthropicPromptLengthPricing;
+
+type OpenAIReasoningEffort =
+  | "none"
+  | "low"
+  | "medium"
+  | "high"
+  | "xhigh"
+  | "max";
 
 interface OpenAITierPricing {
   readonly input: number;
@@ -31,6 +53,11 @@ interface GooglePricing {
   readonly cacheRead: number;
   readonly batchInput: number;
   readonly batchOutput: number;
+}
+
+interface GooglePriceStep {
+  readonly effectiveFromUtcMs: number;
+  readonly pricing: GooglePricing;
 }
 
 interface DeepSeekTierPricing {
@@ -60,6 +87,7 @@ interface OpenAIModelEntry {
   readonly id: string;
   readonly displayName: string;
   readonly supportsVision: boolean;
+  readonly reasoningEfforts: ReadonlyArray<OpenAIReasoningEffort>;
   readonly pricing: OpenAIPricing;
 }
 
@@ -68,6 +96,7 @@ interface GoogleModelEntry {
   readonly displayName: string;
   readonly supportsVision: boolean;
   readonly pricing: GooglePricing;
+  readonly scheduledPricing: ReadonlyArray<GooglePriceStep>;
 }
 
 interface DeepSeekModelEntry {
@@ -84,16 +113,21 @@ interface ModelConfig {
 }
 
 export type {
+  AnthropicFlatPricing,
   AnthropicModelEntry,
   AnthropicPricing,
+  AnthropicPromptLengthPricing,
+  AnthropicRates,
   DeepSeekModelEntry,
   DeepSeekPricing,
   DeepSeekTierPricing,
   GoogleModelEntry,
+  GooglePriceStep,
   GooglePricing,
   LLMProvider,
   ModelConfig,
   OpenAIModelEntry,
   OpenAIPricing,
+  OpenAIReasoningEffort,
   OpenAITierPricing,
 };

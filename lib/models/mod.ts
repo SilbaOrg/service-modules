@@ -1,15 +1,20 @@
 export type {
+  AnthropicFlatPricing,
   AnthropicModelEntry,
   AnthropicPricing,
+  AnthropicPromptLengthPricing,
+  AnthropicRates,
   DeepSeekModelEntry,
   DeepSeekPricing,
   DeepSeekTierPricing,
   GoogleModelEntry,
+  GooglePriceStep,
   GooglePricing,
   LLMProvider,
   ModelConfig,
   OpenAIModelEntry,
   OpenAIPricing,
+  OpenAIReasoningEffort,
   OpenAITierPricing,
 } from "./types.ts";
 
@@ -32,6 +37,7 @@ export {
   ANTHROPIC_MODELS,
   findAnthropicModel,
   resolveAnthropicModelName,
+  selectAnthropicRates,
 } from "./anthropic.ts";
 export type { AnthropicModelId } from "./anthropic.ts";
 
@@ -40,11 +46,17 @@ export {
   OPENAI_LONG_CONTEXT_THRESHOLD_TOKENS,
   OPENAI_MODEL_IDS,
   OPENAI_MODELS,
+  openAIModelAcceptsEffort,
   selectOpenAITier,
 } from "./openai.ts";
 export type { OpenAIModelId } from "./openai.ts";
 
-export { findGoogleModel, GOOGLE_MODEL_IDS, GOOGLE_MODELS } from "./google.ts";
+export {
+  findGoogleModel,
+  GOOGLE_MODEL_IDS,
+  GOOGLE_MODELS,
+  selectGooglePricing,
+} from "./google.ts";
 export type { GoogleModelId } from "./google.ts";
 
 export {

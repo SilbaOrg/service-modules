@@ -1,7 +1,11 @@
 import type { CostDetails, GoogleUsage } from "../types.ts";
-import { findGoogleModel } from "../models/google.ts";
+import { findGoogleModel, selectGooglePricing } from "../models/google.ts";
 
-function calculateGoogleCost(model: string, usage: GoogleUsage): CostDetails {
+function calculateGoogleCost(
+  model: string,
+  usage: GoogleUsage,
+  servedAt?: Date,
+): CostDetails {
   if (!model) {
     throw new Error("Model is required for cost calculation");
   }
@@ -18,7 +22,7 @@ function calculateGoogleCost(model: string, usage: GoogleUsage): CostDetails {
   }
 
   const modelEntry = findGoogleModel(model);
-  const { pricing } = modelEntry;
+  const pricing = selectGooglePricing(modelEntry, servedAt);
 
   const inputTokensInMillions = usage.prompt_tokens / 1_000_000;
   const outputTokensInMillions = usage.completion_tokens / 1_000_000;
@@ -48,7 +52,7 @@ function calculateGoogleCost(model: string, usage: GoogleUsage): CostDetails {
   // The 5,000-free-per-month allowance is account-level state this function
   // cannot see, so it is NOT netted off — cost is over-reported by up to
   // $70/month rather than silently under-reported.
-  // Source: ai.google.dev/gemini-api/docs/pricing, read 2026-08-22.
+  // Source: ai.google.dev/gemini-api/docs/pricing, read 2026-11-10.
   const webSearchQueries = usage.web_search_queries ?? 0;
   const webSearchQueryCost = (webSearchQueries / 1000) * 14.0;
 

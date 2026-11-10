@@ -2,7 +2,7 @@ import type { DeepSeekModelEntry, DeepSeekTierPricing } from "./types.ts";
 import { DEEPSEEK_MODEL_ID } from "./ids.ts";
 
 const DEEPSEEK_MODEL_IDS = [
-  DEEPSEEK_MODEL_ID.V4_FLASH,
+  DEEPSEEK_MODEL_ID.FLASH,
   DEEPSEEK_MODEL_ID.V4_PRO,
 ] as const;
 
@@ -12,7 +12,7 @@ type DeepSeekModelId = typeof DEEPSEEK_MODEL_IDS[number];
  * Peak windows in whole UTC hours, as [startHourInclusive, endHourExclusive).
  * Seven peak hours a day; everything outside them bills at the off-peak tier,
  * which is exactly half the peak rate.
- * Source: api-docs.deepseek.com/quick_start/pricing, read 2026-08-22.
+ * Source: api-docs.deepseek.com/quick_start/pricing, read 2026-11-10.
  */
 const DEEPSEEK_PEAK_WINDOWS_UTC: ReadonlyArray<readonly [number, number]> = [
   [1, 4],
@@ -43,19 +43,19 @@ function isDeepSeekPeakHour(at: Date): boolean {
 
 const DEEPSEEK_MODELS: ReadonlyArray<DeepSeekModelEntry> = [
   {
-    id: DEEPSEEK_MODEL_ID.V4_FLASH,
-    displayName: "DeepSeek V4 Flash",
-    supportsVision: false,
+    id: DEEPSEEK_MODEL_ID.FLASH,
+    displayName: "DeepSeek Flash",
+    supportsVision: true,
     pricing: {
       peak: {
-        inputCacheHit: 0.014,
-        inputCacheMiss: 0.44,
-        output: 1.32,
+        inputCacheHit: 0.006,
+        inputCacheMiss: 0.3,
+        output: 1.2,
       },
       offPeak: {
-        inputCacheHit: 0.007,
-        inputCacheMiss: 0.22,
-        output: 0.66,
+        inputCacheHit: 0.003,
+        inputCacheMiss: 0.15,
+        output: 0.6,
       },
     },
   },
