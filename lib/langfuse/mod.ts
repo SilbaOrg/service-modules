@@ -9,45 +9,75 @@ import { createLogger } from "../logger.ts";
 
 const logger = createLogger("langfuse-utils");
 
-function validateEnv(): {
-  publicKey: string;
-  secretKey: string;
-  baseUrl: string;
-} {
-  const requiredVars = [
-    "LANGFUSE_PUBLIC_KEY",
-    "LANGFUSE_SECRET_KEY",
-    "LANGFUSE_BASE_URL",
-  ];
-  const missingVars = requiredVars.filter((varName) => !Deno.env.get(varName));
+type LangfuseVariable =
+  | "LANGFUSE_PUBLIC_KEY"
+  | "LANGFUSE_SECRET_KEY"
+  | "LANGFUSE_BASE_URL";
 
-  if (missingVars.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missingVars.join(", ")}`
-    );
+type LangfuseSettings =
+  | {
+    readonly kind: "enabled";
+    readonly publicKey: string;
+    readonly secretKey: string;
+    readonly baseUrl: string;
   }
-
-  return {
-    publicKey: Deno.env.get("LANGFUSE_PUBLIC_KEY")!,
-    secretKey: Deno.env.get("LANGFUSE_SECRET_KEY")!,
-    baseUrl: Deno.env.get("LANGFUSE_BASE_URL")!,
+  | {
+    readonly kind: "disabled";
+    readonly missing: ReadonlyArray<LangfuseVariable>;
   };
+
+const langfuseVariables: ReadonlyArray<LangfuseVariable> = [
+  "LANGFUSE_PUBLIC_KEY",
+  "LANGFUSE_SECRET_KEY",
+  "LANGFUSE_BASE_URL",
+];
+
+function readVariable(name: LangfuseVariable): string | undefined {
+  const value = Deno.env.get(name)?.trim();
+  return value === undefined || value === "" ? undefined : value;
+}
+
+function isUnset(name: LangfuseVariable): boolean {
+  return readVariable(name) === undefined;
+}
+
+function readSettings(): LangfuseSettings {
+  const publicKey = readVariable("LANGFUSE_PUBLIC_KEY");
+  const secretKey = readVariable("LANGFUSE_SECRET_KEY");
+  const baseUrl = readVariable("LANGFUSE_BASE_URL");
+
+  return publicKey !== undefined && secretKey !== undefined &&
+      baseUrl !== undefined
+    ? { kind: "enabled", publicKey, secretKey, baseUrl }
+    : { kind: "disabled", missing: langfuseVariables.filter(isUnset) };
+}
+
+function createClient(settings: LangfuseSettings): Langfuse {
+  switch (settings.kind) {
+    case "enabled": {
+      const { publicKey, secretKey, baseUrl } = settings;
+      logger.info("Langfuse tracing enabled", { baseUrl });
+      return new Langfuse({ publicKey, secretKey, baseUrl, flushAt: 1 });
+    }
+    case "disabled": {
+      const { missing } = settings;
+      logger.info("Langfuse tracing disabled", { missing: missing.join(", ") });
+      return new Langfuse({ enabled: false });
+    }
+  }
 }
 
 let langfuseClient: Langfuse | null = null;
 
 function getLangfuse(): Langfuse {
   if (!langfuseClient) {
-    const config = validateEnv();
-    langfuseClient = new Langfuse({
-      publicKey: config.publicKey,
-      secretKey: config.secretKey,
-      baseUrl: config.baseUrl,
-      flushAt: 1,
-    });
-    logger.info("Langfuse client initialized");
+    langfuseClient = createClient(readSettings());
   }
   return langfuseClient;
+}
+
+function isLangfuseEnabled(): boolean {
+  return readSettings().kind === "enabled";
 }
 
 function createTrace(
@@ -58,7 +88,7 @@ function createTrace(
     input?: unknown;
     tags?: string[];
     metadata?: Record<string, unknown>;
-  }
+  },
 ): LangfuseTraceClient {
   const langfuse = getLangfuse();
 
@@ -98,7 +128,7 @@ function createSpan(
   options: {
     input?: unknown;
     metadata?: Record<string, unknown>;
-  }
+  },
 ): LangfuseSpanClient {
   logger.info(`Creating span: ${name}`, { traceId: trace.id });
 
@@ -120,7 +150,7 @@ function createGeneration(
     >;
     input: unknown;
     metadata?: Record<string, unknown>;
-  }
+  },
 ): LangfuseGenerationClient {
   logger.info(`Creating generation: ${name}`, {
     parentId: parent.id,
@@ -131,7 +161,10 @@ function createGeneration(
     name: string;
     model: string;
     input: unknown;
-    modelParameters?: Record<string, string | number | boolean | string[] | null>;
+    modelParameters?: Record<
+      string,
+      string | number | boolean | string[] | null
+    >;
     metadata?: Record<string, unknown>;
   } = {
     name,
@@ -182,7 +215,7 @@ function extractTraceContext(headers: Headers): {
 
 function createTraceHeaders(
   traceId: string,
-  parentId?: string
+  parentId?: string,
 ): Record<string, string> {
   const headers: Record<string, string> = {
     "x-langfuse-trace-id": traceId,
@@ -196,11 +229,12 @@ function createTraceHeaders(
 }
 
 export {
-  createTrace,
-  createSpan,
-  createGeneration,
-  createTraceHeaders,
   completeTrace,
+  createGeneration,
+  createSpan,
+  createTrace,
+  createTraceHeaders,
   extractTraceContext,
   flushEvents,
+  isLangfuseEnabled,
 };
